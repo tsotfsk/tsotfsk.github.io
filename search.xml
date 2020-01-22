@@ -276,8 +276,8 @@ W^N=U^{-1}\Sigma^{N}U</script><ul>
       </tags>
   </entry>
   <entry>
-    <title>一道有趣的数学题(一)</title>
-    <url>/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/</url>
+    <title>一道有趣的数学题</title>
+    <url>/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98/</url>
     <content><![CDATA[<p>前段时间看到了一道十分有趣的数学题，如下</p>
 <script type="math/tex; mode=display">
 \begin{align*}
@@ -381,7 +381,7 @@ A=\begin{bmatrix}
 x^n+y^n+z^n=1.43084957^n+(-0.21542478+0.2647132j)^n+(-0.21542478-0.2647132j)^n</script><p>有人可能要质疑了，你这个解不行啊，不够math啊。说得好！！！我李某元也是这么认为的。那我就给你一组比较math的$x，y，z$的解，其实python的一个库sympy可以用来做符号计算，要求解我们的方程组，只需要下面几条代码就可以了</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> sympy</span><br><span class="line">x = sympy.Symbol(<span class="string">'x'</span>)</span><br><span class="line">y = sympy.Symbol(<span class="string">'y'</span>)</span><br><span class="line">z = sympy.Symbol(<span class="string">'z'</span>)</span><br><span class="line">result = sympy.solve([x + y + z - <span class="number">1</span> , x**<span class="number">2</span> + y**<span class="number">2</span> + z**<span class="number">2</span> - <span class="number">2</span>, x**<span class="number">3</span> + y**<span class="number">3</span>+ z**<span class="number">3</span> - <span class="number">3</span>], [x, y, z])</span><br></pre></td></tr></table></figure>
 <p>输出的结果我给你整理一下哈，算了，懒得整理成latex的格式了，看个大概吧，嘻嘻$\cdots$</p>
-<p><img src="/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/result.png" alt></p>
+<p><img src="/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98/result.png" alt></p>
 <p>图中的$result[0],result[1],result[2]$分别可以对应$x，y，z$的一组解，注意这个方程其实是有$6$组解的，我们这里只给出三个让大家瞅瞅啥样哈。不知道这个结果是不是你比较喜欢，反正我不喜欢…</p>
 <p>好了，那么大功告成！！！！当然这道题也有更一般的解法，但是用到了群论、数论之类的，其实就是一些很基础的知识，只不过讲的高大上了点，和我的做法本质是一样的，这里不过多引入，有兴趣的可以看知乎上给出的<a href="https://zhuanlan.zhihu.com/p/96063757" target="_blank" rel="noopener">高大上的解法</a>。</p>
 ]]></content>
