@@ -4,7 +4,7 @@
     <title>矩阵的matmul运算</title>
     <url>/2020/01/26/%E7%9F%A9%E9%98%B5%E7%9A%84matmul%E8%BF%90%E7%AE%97/</url>
     <content><![CDATA[<blockquote>
-<p>这个是一个很容易搞晕的东西，比如什么时候两个矩阵乘法是做广播(boardcast)，什么时候是做matmu lproduct，很容易搞错而找不到bug在哪里，我在这里总结一下。具体内容参考了<a href="https://pytorch.org/docs/stable/torch.html?highlight=matmul#torch.matmul" target="_blank" rel="noopener">matmul</a>和<a href="https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics" target="_blank" rel="noopener">boardcast</a>的官方文档。</p>
+<p>这个是一个很容易搞晕的东西，比如什么时候两个矩阵乘法是做广播(boardcast)，什么时候是做矩阵点积(matmul product)，有时候搞错了也找不到bug在哪里，所以我在这里总结一下。具体内容参考了<a href="https://pytorch.org/docs/stable/torch.html?highlight=matmul#torch.matmul" target="_blank" rel="noopener">matmul</a>和<a href="https://pytorch.org/docs/stable/notes/broadcasting.html#broadcasting-semantics" target="_blank" rel="noopener">boardcast</a>的官方文档。</p>
 </blockquote>
 <a id="more"></a>
 <h3 id="矩阵的matmul操作"><a href="#矩阵的matmul操作" class="headerlink" title="矩阵的matmul操作"></a>矩阵的matmul操作</h3><ul>
