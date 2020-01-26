@@ -138,17 +138,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">28</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">30</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">8</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">10</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">11</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -410,6 +410,94 @@
 <h3 id="Step-8-Forward-with-LSTM"><a href="#Step-8-Forward-with-LSTM" class="headerlink" title="Step 8: Forward with LSTM"></a>Step 8: Forward with LSTM</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">packed_output, (ht, ct) = lstm(packed_input)</span><br><span class="line"><span class="comment"># packed_output (PackedSequence is NamedTuple with 2 attributes: data and batch_sizes</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># packed_output.data :</span></span><br><span class="line"><span class="comment">#                          [[-0.00947162  0.07743231  0.20343193  0.29611713  0.07992904]   l</span></span><br><span class="line"><span class="comment">#                           [ 0.08596145  0.09205993  0.20892891  0.21788561  0.00624391]   m</span></span><br><span class="line"><span class="comment">#                           [ 0.16861682  0.07807446  0.18812777 -0.01148055 -0.01091915]   t</span></span><br><span class="line"><span class="comment">#                           [ 0.20994528  0.17932937  0.17748171  0.05025435  0.15717036]   o</span></span><br><span class="line"><span class="comment">#                           [ 0.01364102  0.11060348  0.14704391  0.24145307  0.12879576]   e</span></span><br><span class="line"><span class="comment">#                           [ 0.02610307  0.00965587  0.31438383  0.246354    0.08276576]   i</span></span><br><span class="line"><span class="comment">#                           [ 0.09527554  0.14521319  0.1923058  -0.05925677  0.18633027]   n</span></span><br><span class="line"><span class="comment">#                           [ 0.09872741  0.13324396  0.19446367  0.4307988  -0.05149471]   d</span></span><br><span class="line"><span class="comment">#                           [ 0.03895474  0.08449443  0.18839942  0.02205326  0.23149511]   n</span></span><br><span class="line"><span class="comment">#                           [ 0.14620507  0.07822411  0.2849248  -0.22616537  0.15480657]   g</span></span><br><span class="line"><span class="comment">#                           [ 0.00884941  0.05762182  0.30557525  0.373712    0.08834908]   i</span></span><br><span class="line"><span class="comment">#                           [ 0.12460691  0.21189159  0.04823487  0.06384943  0.28563985]   y</span></span><br><span class="line"><span class="comment">#                           [ 0.01368293  0.15872964  0.03759198 -0.13403234  0.23890573]   _</span></span><br><span class="line"><span class="comment">#                           [ 0.00377969  0.05943518  0.2961751   0.35107893  0.15148178]   u</span></span><br><span class="line"><span class="comment">#                           [ 0.00737647  0.17101538  0.28344846  0.18878219  0.20339936]   s</span></span><br><span class="line"><span class="comment">#                           [ 0.0864429   0.11173367  0.3158251   0.37537992  0.11876849]   m</span></span><br><span class="line"><span class="comment">#                           [ 0.17885767  0.12713005  0.28287745  0.05562563  0.10871304]   t</span></span><br><span class="line"><span class="comment">#                           [ 0.09486895  0.12772645  0.34048414  0.25930756  0.12044918]]  r</span></span><br><span class="line"><span class="comment"># packed_output.data.shape : (batch_sum_seq_len X hidden_dim) = (18 X 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># packed_output.batch_sizes =&gt; [ 3,  3,  3,  3,  2,  2,  1,  1] (same as packed_input.batch_sizes)</span></span><br><span class="line"><span class="comment"># visualization :</span></span><br><span class="line"><span class="comment"># l  o  n  g  _  s  t  r   #(long_str)</span></span><br><span class="line"><span class="comment"># m  e  d  i  u  m         #(medium)</span></span><br><span class="line"><span class="comment"># t  i  n  y               #(tiny)</span></span><br><span class="line"><span class="comment"># 3  3  3  3  2  2  1  1   (sum = 18 [batch_sum_seq_len])</span></span><br></pre></td></tr></table></figure>
 <h3 id="Step-9-Call-unpack-padded-sequences-if-required-or-just-pick-last-hidden-vector"><a href="#Step-9-Call-unpack-padded-sequences-if-required-or-just-pick-last-hidden-vector" class="headerlink" title="Step 9: Call unpack_padded_sequences if required / or just pick last hidden vector"></a>Step 9: Call unpack_padded_sequences if required / or just pick last hidden vector</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># unpack your output if required</span></span><br><span class="line">output, input_sizes = pad_packed_sequence(packed_output, batch_first=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># output:</span></span><br><span class="line"><span class="comment"># output =&gt;</span></span><br><span class="line"><span class="comment">#                          [[[-0.00947162  0.07743231  0.20343193  0.29611713  0.07992904]   l</span></span><br><span class="line"><span class="comment">#                            [ 0.20994528  0.17932937  0.17748171  0.05025435  0.15717036]   o</span></span><br><span class="line"><span class="comment">#                            [ 0.09527554  0.14521319  0.1923058  -0.05925677  0.18633027]   n</span></span><br><span class="line"><span class="comment">#                            [ 0.14620507  0.07822411  0.2849248  -0.22616537  0.15480657]   g</span></span><br><span class="line"><span class="comment">#                            [ 0.01368293  0.15872964  0.03759198 -0.13403234  0.23890573]   _</span></span><br><span class="line"><span class="comment">#                            [ 0.00737647  0.17101538  0.28344846  0.18878219  0.20339936]   s</span></span><br><span class="line"><span class="comment">#                            [ 0.17885767  0.12713005  0.28287745  0.05562563  0.10871304]   t</span></span><br><span class="line"><span class="comment">#                            [ 0.09486895  0.12772645  0.34048414  0.25930756  0.12044918]]  r</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#                           [[ 0.08596145  0.09205993  0.20892891  0.21788561  0.00624391]   m</span></span><br><span class="line"><span class="comment">#                            [ 0.01364102  0.11060348  0.14704391  0.24145307  0.12879576]   e</span></span><br><span class="line"><span class="comment">#                            [ 0.09872741  0.13324396  0.19446367  0.4307988  -0.05149471]   d</span></span><br><span class="line"><span class="comment">#                            [ 0.00884941  0.05762182  0.30557525  0.373712    0.08834908]   i</span></span><br><span class="line"><span class="comment">#                            [ 0.00377969  0.05943518  0.2961751   0.35107893  0.15148178]   u</span></span><br><span class="line"><span class="comment">#                            [ 0.0864429   0.11173367  0.3158251   0.37537992  0.11876849]   m</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]   &lt;pad&gt;</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]]  &lt;pad&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#                           [[ 0.16861682  0.07807446  0.18812777 -0.01148055 -0.01091915]   t</span></span><br><span class="line"><span class="comment">#                            [ 0.02610307  0.00965587  0.31438383  0.246354    0.08276576]   i</span></span><br><span class="line"><span class="comment">#                            [ 0.03895474  0.08449443  0.18839942  0.02205326  0.23149511]   n</span></span><br><span class="line"><span class="comment">#                            [ 0.12460691  0.21189159  0.04823487  0.06384943  0.28563985]   y</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]   &lt;pad&gt;</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]   &lt;pad&gt;</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]   &lt;pad&gt;</span></span><br><span class="line"><span class="comment">#                            [ 0.          0.          0.          0.          0.        ]]] &lt;pad&gt;</span></span><br><span class="line"><span class="comment"># output.shape : ( batch_size X max_seq_len X hidden_dim) = (3 X 8 X 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Or if you just want the final hidden state?</span></span><br><span class="line">print(ht[<span class="number">-1</span>])</span><br></pre></td></tr></table></figure>
 <h3 id="Summary-of-Shape-Transformations"><a href="#Summary-of-Shape-Transformations" class="headerlink" title="Summary of Shape Transformations"></a>Summary of Shape Transformations</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (batch_size X max_seq_len X embedding_dim) --&gt; Sort by seqlen ---&gt; (batch_size X max_seq_len X embedding_dim)</span></span><br><span class="line"><span class="comment"># (batch_size X max_seq_len X embedding_dim) ---&gt;      Pack     ---&gt; (batch_sum_seq_len X embedding_dim)</span></span><br><span class="line"><span class="comment"># (batch_sum_seq_len X embedding_dim)        ---&gt;      LSTM     ---&gt; (batch_sum_seq_len X hidden_dim)</span></span><br><span class="line"><span class="comment"># (batch_sum_seq_len X hidden_dim)           ---&gt;    UnPack     ---&gt; (batch_size X max_seq_len X hidden_dim)</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2020/01/26/vscode%E7%9A%84python%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="咸鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/01/26/vscode%E7%9A%84python%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">VS Code的python环境配置</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-01-26 13:58:13 / 修改时间：22:58:15" itemprop="dateCreated datePublished" datetime="2020-01-26T13:58:13+08:00">2020-01-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%8A%B1%E9%87%8C%E8%83%A1%E5%93%A8%E7%9A%84%E4%B8%9C%E8%A5%BF/" itemprop="url" rel="index">
+                    <span itemprop="name">花里胡哨的东西</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/26/vscode%E7%9A%84python%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/26/vscode%E7%9A%84python%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>我个人习惯把VS Code作为编辑器来写python, 但是使用过程中会遇到一些小小的问题，所以在这里把问题的解决方案记录下来，以便以后查阅，目前还在持续更新中。</p>
+</blockquote>
+<h3 id="pylint提示no-member"><a href="#pylint提示no-member" class="headerlink" title="pylint提示no-member"></a>pylint提示no-member</h3><p>比如对于一些第三方库，pytorch之类的，pylint会经常提示一些函数no-member，我们可以在配置(setting.json)里面加入要忽略错误的第三方库。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"python.linting.pylintArgs"</span>: [</span><br><span class="line">    <span class="comment"># List of members which are set dynamically and missed by pylint inference</span></span><br><span class="line">    <span class="comment"># system, and so shouldn't trigger E1101 when accessed. Python regular</span></span><br><span class="line">    <span class="comment"># expressions are accepted.</span></span><br><span class="line">    <span class="comment"># https://github.com/pytorch/pytorch/issues/701</span></span><br><span class="line">    <span class="string">"--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"</span></span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -1151,122 +1239,12 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="咸鱼">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/" class="post-title-link" itemprop="url">GCN要用到的数学知识系列(一)</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-12-14 20:47:00" itemprop="dateCreated datePublished" datetime="2019-12-14T20:47:00+08:00">2019-12-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-01-22 18:05:04" itemprop="dateModified" datetime="2020-01-22T18:05:04+08:00">2020-01-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
-                    <span itemprop="name">GCN要用到的数学知识</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" itemprop="url" rel="index">
-                    <span itemprop="name">傅里叶变换</span>
-                  </a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本系列文章将啰里啰嗦的介绍GCN(Graph Neural Network)里用到的一些数学知识，我尽量从简单的地方慢慢讲起，但精力有限，还是需要阅读者有一定的数学基础，比如要熟悉线性代数中的线性空间、特征值与特征向量含义、半正定矩阵的性质等，同时要对梯度有一定的了解。另外这是我第一次写博客，表达能力不佳，如果有疏漏以及不正确的地方，还望大家指正。</p>
-<p>系列文章预计分成四部分</p>
-<ul>
-<li>傅里叶变换</li>
-<li>卷积的定义和性质</li>
-<li>拉普拉斯矩阵</li>
-<li>切比雪夫多项式</li>
-</ul>
-<h3 id="一、离散型傅里叶变换"><a href="#一、离散型傅里叶变换" class="headerlink" title="一、离散型傅里叶变换"></a>一、<strong>离散型傅里叶变换</strong></h3><blockquote>
-<p>大多数讲解傅里叶变换的文章都是从时域和频域的角度引入傅里叶变换，但这种讲解往往过于抽象，这里为了便于理解，从大家熟知的线性空间中向量的线性组合引入离散傅里叶变换，其实如果要了解GCN的原理，傅里叶部分只需要了解到这里就可以了。但为了更好的认识傅里叶变换，我这里也额外给出了离散傅里叶变换推广到连续性傅里叶变换的情况，并继续把结果从离散谱推广到连续谱。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
 
 
 
