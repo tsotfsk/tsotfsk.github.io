@@ -227,7 +227,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-03-07 15:43:54 / 修改时间：19:57:08" itemprop="dateCreated datePublished" datetime="2020-03-07T15:43:54+08:00">2020-03-07</time>
+              <time title="创建时间：2020-03-07 15:43:54 / 修改时间：20:17:38" itemprop="dateCreated datePublished" datetime="2020-03-07T15:43:54+08:00">2020-03-07</time>
             </span>
 
           
@@ -272,58 +272,14 @@
           <blockquote>
 <p>对python的高级编程还了解不多，所以来取取经。这本书看起来挺快的，大概花了我一天的时间吧。这里整理下笔记，以便以后能用到。这里略过了一些比如线程和协程之类的使用。</p>
 </blockquote>
-<h3 id="2-遵循PEP8风格"><a href="#2-遵循PEP8风格" class="headerlink" title="2.遵循PEP8风格"></a>2.遵循PEP8风格</h3><p>这里我只列几个我不曾注意到的。参考<a href="https://www.cnblogs.com/bymo/p/9567140.html#_label2_0" target="_blank" rel="noopener">PEP 8 中文</a></p>
-<ul>
-<li><p>import 不要用相对位置。如果导入系统没有正确的配置（比如包里的一个目录在sys.path里的路径后），使用绝对路径会更加可读并且性能更好（至少能提供更好的错误信息）:</p>
-</li>
-<li><p>二元运算符换行放行首</p>
-</li>
-<li><p>算术表达式问题。总是在二元运算符两边加一个空格：赋值（=），增量赋值（+=，-=），比较（==,&lt;,&gt;,!=,&lt;&gt;,&lt;=,&gt;=,in,not,in,is,is not），布尔（and, or, not）。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">i = i + <span class="number">1</span></span><br><span class="line">submitted += <span class="number">1</span></span><br><span class="line">x = x*<span class="number">2</span> - <span class="number">1</span></span><br><span class="line">hypot2 = x*x + y*y</span><br><span class="line">c = (a+b) * (a-b)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>文档字符单行的话三引号不换行，两行及以上第二个应当换行</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""Return a foobang</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Optional plotz says to frobnicate the bizbaz first.</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>from M import * 导入的模块应该使用all机制去防止内部的接口对外暴露，或者使用在全局变量前加下划线的方式</p>
-</li>
-<li><p>从Exception继承异常，而不是BaseException。</p>
-</li>
-<li><p>使用 ”.startswith() 和 ”.endswith() 代替通过字符串切割的方法去检查前缀和后缀。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">推荐: <span class="keyword">if</span> foo.startswith(<span class="string">'bar'</span>):</span><br><span class="line">糟糕: <span class="keyword">if</span> foo[:<span class="number">3</span>] == <span class="string">'bar'</span>:</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>对象类型的比较应该用isinstance()而不是直接比较type。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正确: <span class="keyword">if</span> isinstance(obj, int):</span><br><span class="line">糟糕: <span class="keyword">if</span> type(obj) <span class="keyword">is</span> type(<span class="number">1</span>):</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="3-了解bytes、str和unicode的区别"><a href="#3-了解bytes、str和unicode的区别" class="headerlink" title="3.了解bytes、str和unicode的区别"></a>3.了解bytes、str和unicode的区别</h3><p><img src="/2020/03/07/EffectivePython%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/编码.png" alt></p>
-<p>程序核心部分应使用Unicode，编码与解码应放在外围部分。</p>
-<h3 id="9-用生成器表达式来改写数据量较大的列表推导"><a href="#9-用生成器表达式来改写数据量较大的列表推导" class="headerlink" title="9.用生成器表达式来改写数据量较大的列表推导"></a>9.用生成器表达式来改写数据量较大的列表推导</h3><p>优点就是生成器不用一次载入，格式是(…)</p>
-<h3 id="13-try-except-else-finally"><a href="#13-try-except-else-finally" class="headerlink" title="13.try/except/else/finally"></a>13.try/except/else/finally</h3><p>try代码不应过多，只做主要判断，应写在else中。</p>
-<h3 id="14-尽量用异常来表示特殊情况，而不要返回None"><a href="#14-尽量用异常来表示特殊情况，而不要返回None" class="headerlink" title="14.尽量用异常来表示特殊情况，而不要返回None"></a>14.尽量用异常来表示特殊情况，而不要返回None</h3><p>因为None可以通过if条件语句。</p>
-<h3 id="17-在参数上迭代时，要小心"><a href="#17-在参数上迭代时，要小心" class="headerlink" title="17.在参数上迭代时，要小心"></a>17.在参数上迭代时，要小心</h3><p>因为迭代器只能迭代一次。</p>
-<h3 id="20-用None和文档字符串来描述具有动态默认值的参数"><a href="#20-用None和文档字符串来描述具有动态默认值的参数" class="headerlink" title="20.用None和文档字符串来描述具有动态默认值的参数"></a>20.用None和文档字符串来描述具有动态默认值的参数</h3><p>也就是参数默认值不要给一个具体的，比如函数，或者空字典，因为默认参数在载入的时候只初始化一遍。如果return的恰好也是默认参数会出问题。</p>
-<h3 id="21-用只能以关键字形式指定的参数来确保代码明晰"><a href="#21-用只能以关键字形式指定的参数来确保代码明晰" class="headerlink" title="21.用只能以关键字形式指定的参数来确保代码明晰"></a>21.用只能以关键字形式指定的参数来确保代码明晰</h3><p>尽量不要采用位置赋值，而要采用关键字赋值，易读性强也更容易维护。</p>
-<p>为了避免关键字参数被按位置参数赋值，可以使用<em>*kwargs来提取参数，但是可读性差一点，要求增加函数文档，python3的话可以通过在位置参数和关键字参数中间增加一个` </em> `</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(number,dvisor, *, ignore=False)</span></span></span><br></pre></td></tr></table></figure>
-<h3 id="25-用super初始化父类"><a href="#25-用super初始化父类" class="headerlink" title="25.用super初始化父类"></a>25.用super初始化父类</h3><p>python 3支持不带参数的super，所以没必要加参数。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">super().__init__(...)</span><br></pre></td></tr></table></figure>
-<h3 id="26-只在私用mix-in组件的时候进行多重继承"><a href="#26-只在私用mix-in组件的时候进行多重继承" class="headerlink" title="26.只在私用mix-in组件的时候进行多重继承"></a>26.只在私用mix-in组件的时候进行多重继承</h3><p>这个了解一下吧，mix-in提供的就是一系列通用功能。</p>
-<h3 id="27-多用public属性，少用private属性"><a href="#27-多用public属性，少用private属性" class="headerlink" title="27.多用public属性，少用private属性"></a>27.多用public属性，少用private属性</h3><p>这个挺重要的，python的private属性实际上是假的，比如类Server含有一个<code>self.__post</code>的私有属性，虽然我无法通过函数去返回这个，但是我可以直接调用<code>_Server__post</code>来获得这个属性，那何必自欺欺人呢，大家都是成年人了。真需要的话不如加一个_，就当是提醒别人注意吧。</p>
-<h3 id="29-用纯属性来取代get和set方法"><a href="#29-用纯属性来取代get和set方法" class="headerlink" title="29. 用纯属性来取代get和set方法"></a>29. 用纯属性来取代get和set方法</h3><p>这不是python风格的…我也挺想吐槽了，根本没必要。</p>
-<h3 id="32-用-getarr-、-getattribute-和-setattr-实现按需生成的属性"><a href="#32-用-getarr-、-getattribute-和-setattr-实现按需生成的属性" class="headerlink" title="32. 用__getarr__、__getattribute__ 和__setattr__实现按需生成的属性"></a>32. 用<code>__getarr__</code>、<code>__getattribute__</code> 和<code>__setattr__</code>实现按需生成的属性</h3><p>这些就是在获取类中不存在的值的时候定义的操作，比如data中没有foo这个变量，那么当我调用data.foo的时候会去调用<code>__getarr__</code> 然后我在里面使用 setattr(self, name, value)就可以将foo这个变量添加到类的<code>__dict__</code> 中。</p>
-<h3 id="41-考虑使用concurrent-futures-来实现真正的平行计算"><a href="#41-考虑使用concurrent-futures-来实现真正的平行计算" class="headerlink" title="41.考虑使用concurrent.futures 来实现真正的平行计算"></a>41.考虑使用concurrent.futures 来实现真正的平行计算</h3><p>这里大概讲的多进程的东西，还提到了不要使用multiprocessing，说是有一些复杂特性，要避开？但python的多进程本来就挺麻烦的…</p>
-<h3 id="42-用functools-wraps定义函数修饰器"><a href="#42-用functools-wraps定义函数修饰器" class="headerlink" title="42. 用functools.wraps定义函数修饰器"></a>42. 用functools.wraps定义函数修饰器</h3><p>之所以要用这个，是因为修饰器会更改函数的名字，这可能影响调试器等的效果。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">trace</span><span class="params">(func)</span>:</span></span><br><span class="line"><span class="meta">	@wraps(func)</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">		<span class="comment"># ...</span></span><br><span class="line">	<span class="keyword">return</span> wrapper</span><br><span class="line">	</span><br><span class="line"><span class="meta">@trace</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fibonacci</span><span class="params">(n)</span></span></span><br><span class="line"><span class="function">	# ...</span></span><br></pre></td></tr></table></figure>
-<h3 id="43-考虑以contextlib和with语句来改写可复用的try-finally代码"><a href="#43-考虑以contextlib和with语句来改写可复用的try-finally代码" class="headerlink" title="43.考虑以contextlib和with语句来改写可复用的try/finally代码"></a>43.考虑以contextlib和with语句来改写可复用的try/finally代码</h3><p>这个可以定义一宗情景管理器，比如以下代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@contextmanager</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">debug_logging</span><span class="params">(level)</span>:</span></span><br><span class="line">	logger = logging.getLogger()</span><br><span class="line">	old_level = logger.getEffectiveLevel()</span><br><span class="line">	logger . setLevel(level)</span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		<span class="keyword">yield</span></span><br><span class="line">	<span class="keyword">finally</span>:</span><br><span class="line">		logger.setLevel(old_level)</span><br><span class="line"><span class="keyword">with</span> debug_logging(logging.DEBUG):</span><br><span class="line">    <span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
-<p>这段代码定义了一个可以暂时提升logging的level的方法，在执行到yield的时候会进入with下面的语句执行，执行完毕后会返回，然后执行finally中的语句。</p>
-<h3 id="44-用copyreg实现可靠的pickle操作"><a href="#44-用copyreg实现可靠的pickle操作" class="headerlink" title="44.用copyreg实现可靠的pickle操作"></a>44.用copyreg实现可靠的pickle操作</h3><p>pickle是不可靠的序列化(json是可靠的序列化)，所以其只能建立在相互信任的程序之间使用。它可以保存一些类啊什么的，使用copyreg是在类的定义或者什么改变的条件下，依然可以load的解决方法。</p>
-<h3 id="46-使用内置算法与数据结构"><a href="#46-使用内置算法与数据结构" class="headerlink" title="46.使用内置算法与数据结构"></a>46.使用内置算法与数据结构</h3><p>这个用到再说吧，主要是有一些队列啊，有序字典(python 3.6+后字典都是有序的)，还有堆栈啊什么的，以后做leetcode可以用一用。</p>
-<h3 id="51-为自编的模块定义根异常，以便将调用者与API相隔离"><a href="#51-为自编的模块定义根异常，以便将调用者与API相隔离" class="headerlink" title="51.为自编的模块定义根异常，以便将调用者与API相隔离"></a>51.为自编的模块定义根异常，以便将调用者与API相隔离</h3><p>这个没啥，注意到基类比如叫Error继承自Exception就可以了。</p>
-<h3 id="53-用适当的方式打破循环依赖关系"><a href="#53-用适当的方式打破循环依赖关系" class="headerlink" title="53.用适当的方式打破循环依赖关系"></a>53.用适当的方式打破循环依赖关系</h3><p>我觉得还是不要写这种代码好了，如果真写了，再回来看吧</p>
-<h3 id="56-用unittest来测试全部代码"><a href="#56-用unittest来测试全部代码" class="headerlink" title="56.用unittest来测试全部代码"></a>56.用unittest来测试全部代码</h3><p>保留意见</p>
-<h3 id="57-用pdb来实现交互调试"><a href="#57-用pdb来实现交互调试" class="headerlink" title="57.用pdb来实现交互调试"></a>57.用pdb来实现交互调试</h3><p>这个要学一下，一个pdb.set_trace()就可以开始调试了，很方便啊。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/07/EffectivePython%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

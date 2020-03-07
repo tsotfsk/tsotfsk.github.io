@@ -6,6 +6,7 @@
     <content><![CDATA[<blockquote>
 <p>对python的高级编程还了解不多，所以来取取经。这本书看起来挺快的，大概花了我一天的时间吧。这里整理下笔记，以便以后能用到。这里略过了一些比如线程和协程之类的使用。</p>
 </blockquote>
+<a id="more"></a>
 <h3 id="2-遵循PEP8风格"><a href="#2-遵循PEP8风格" class="headerlink" title="2.遵循PEP8风格"></a>2.遵循PEP8风格</h3><p>这里我只列几个我不曾注意到的。参考<a href="https://www.cnblogs.com/bymo/p/9567140.html#_label2_0" target="_blank" rel="noopener">PEP 8 中文</a></p>
 <ul>
 <li><p>import 不要用相对位置。如果导入系统没有正确的配置（比如包里的一个目录在sys.path里的路径后），使用绝对路径会更加可读并且性能更好（至少能提供更好的错误信息）:</p>
