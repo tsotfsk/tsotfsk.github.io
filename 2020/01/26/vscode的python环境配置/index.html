@@ -54,9 +54,9 @@
 <meta property="og:description" content="我个人习惯把VS Code作为编辑器来写python, 但是使用过程中会遇到一些小小的问题，所以在这里把问题的解决方案记录下来，以便以后查阅，目前还在持续更新中。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-01-26T05:58:13.000Z">
-<meta property="article:modified_time" content="2020-01-26T15:00:56.883Z">
-<meta property="article:tag" content="vscode">
+<meta property="article:modified_time" content="2020-02-28T09:12:30.963Z">
 <meta property="article:tag" content="python">
+<meta property="article:tag" content="vscode">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://tsotfsk.top/2020/01/26/vscode%E7%9A%84python%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">
@@ -142,17 +142,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">30</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">35</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">9</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">14</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -228,10 +228,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-01-26 13:58:13 / 修改时间：23:00:56" itemprop="dateCreated datePublished" datetime="2020-01-26T13:58:13+08:00">2020-01-26</time>
+              <time title="创建时间：2020-01-26 13:58:13" itemprop="dateCreated datePublished" datetime="2020-01-26T13:58:13+08:00">2020-01-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-28 17:12:30" itemprop="dateModified" datetime="2020-02-28T17:12:30+08:00">2020-02-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -271,14 +277,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>457</span>
+              <span>866</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -295,7 +301,11 @@
 </blockquote>
 <a id="more"></a>
 <h3 id="pylint提示no-member"><a href="#pylint提示no-member" class="headerlink" title="pylint提示no-member"></a>pylint提示no-member</h3><p>比如对于一些第三方库，pytorch之类的，pylint会经常提示一些函数no-member，我们可以在配置(setting.json)里面加入要忽略错误的第三方库。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"python.linting.pylintArgs"</span>: [</span><br><span class="line">    <span class="comment"># List of members which are set dynamically and missed by pylint inference</span></span><br><span class="line">    <span class="comment"># system, and so shouldn't trigger E1101 when accessed. Python regular</span></span><br><span class="line">    <span class="comment"># expressions are accepted.</span></span><br><span class="line">    <span class="comment"># https://github.com/pytorch/pytorch/issues/701</span></span><br><span class="line">    <span class="string">"--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"</span></span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">"python.linting.pylintArgs": [</span><br><span class="line"> # List of members which are set dynamically and missed by pylint inference</span><br><span class="line"> # system, and so shouldn't trigger E1101 when accessed. Python regular</span><br><span class="line"> # expressions are accepted.</span><br><span class="line"> # https://github.com/pytorch/pytorch/issues/701</span><br><span class="line"> 	<span class="string">"--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"</span></span><br><span class="line"> ],</span><br></pre></td></tr></table></figure>
+<h3 id="使用cmder作为默认终端"><a href="#使用cmder作为默认终端" class="headerlink" title="使用cmder作为默认终端"></a>使用cmder作为默认终端</h3><p>cmder集成了一些linux的指令，比如head,ls,cat,echo等，所以使用起来非常方便，可以很大的提高效率。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration </span><br><span class="line">"terminal.integrated.shell.windows": "cmd.exe",</span><br><span class="line">"terminal.integrated.shellArgs.windows": ["/K", "D:/cmder/vendor/init.bat"] # 这个填自己电脑里cmder的位置就可</span><br></pre></td></tr></table></figure>
+<p>顺便一提，如果你下的cmder不是便携版而是完整版，那它是自带git的，也省得下载git了，vscode配置git可以加上</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"git.path": "d:/cmder/vendor/git-for-windows/bin/git.exe"</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -305,8 +315,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/vscode/" rel="tag"># vscode</a>
               <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/vscode/" rel="tag"># vscode</a>
           </div>
 
         
@@ -382,7 +392,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pylint提示no-member"><span class="nav-number">1.</span> <span class="nav-text">pylint提示no-member</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pylint提示no-member"><span class="nav-number">1.</span> <span class="nav-text">pylint提示no-member</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用cmder作为默认终端"><span class="nav-number">2.</span> <span class="nav-text">使用cmder作为默认终端</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -434,12 +444,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">40k</span>
+    <span title="站点总字数">44k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:23</span>
+    <span title="站点阅读时长">1:31</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>

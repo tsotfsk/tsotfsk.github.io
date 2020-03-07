@@ -1,6 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>EffectivePython读书笔记</title>
+    <url>/2020/03/07/EffectivePython%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<blockquote>
+<p>对python的高级编程还了解不多，所以来取取经。这本书看起来挺快的，大概花了我一天的时间吧。这里整理下笔记，以便以后能用到。这里略过了一些比如线程和协程之类的使用。</p>
+</blockquote>
+<h3 id="2-遵循PEP8风格"><a href="#2-遵循PEP8风格" class="headerlink" title="2.遵循PEP8风格"></a>2.遵循PEP8风格</h3><p>这里我只列几个我不曾注意到的。参考<a href="https://www.cnblogs.com/bymo/p/9567140.html#_label2_0" target="_blank" rel="noopener">PEP 8 中文</a></p>
+<ul>
+<li><p>import 不要用相对位置。如果导入系统没有正确的配置（比如包里的一个目录在sys.path里的路径后），使用绝对路径会更加可读并且性能更好（至少能提供更好的错误信息）:</p>
+</li>
+<li><p>二元运算符换行放行首</p>
+</li>
+<li><p>算术表达式问题。总是在二元运算符两边加一个空格：赋值（=），增量赋值（+=，-=），比较（==,&lt;,&gt;,!=,&lt;&gt;,&lt;=,&gt;=,in,not,in,is,is not），布尔（and, or, not）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">i = i + <span class="number">1</span></span><br><span class="line">submitted += <span class="number">1</span></span><br><span class="line">x = x*<span class="number">2</span> - <span class="number">1</span></span><br><span class="line">hypot2 = x*x + y*y</span><br><span class="line">c = (a+b) * (a-b)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>文档字符单行的话三引号不换行，两行及以上第二个应当换行</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">"""Return a foobang</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Optional plotz says to frobnicate the bizbaz first.</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>from M import * 导入的模块应该使用all机制去防止内部的接口对外暴露，或者使用在全局变量前加下划线的方式</p>
+</li>
+<li><p>从Exception继承异常，而不是BaseException。</p>
+</li>
+<li><p>使用 ”.startswith() 和 ”.endswith() 代替通过字符串切割的方法去检查前缀和后缀。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">推荐: <span class="keyword">if</span> foo.startswith(<span class="string">'bar'</span>):</span><br><span class="line">糟糕: <span class="keyword">if</span> foo[:<span class="number">3</span>] == <span class="string">'bar'</span>:</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对象类型的比较应该用isinstance()而不是直接比较type。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">正确: <span class="keyword">if</span> isinstance(obj, int):</span><br><span class="line">糟糕: <span class="keyword">if</span> type(obj) <span class="keyword">is</span> type(<span class="number">1</span>):</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="3-了解bytes、str和unicode的区别"><a href="#3-了解bytes、str和unicode的区别" class="headerlink" title="3.了解bytes、str和unicode的区别"></a>3.了解bytes、str和unicode的区别</h3><p><img src="/2020/03/07/EffectivePython%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/编码.png" alt></p>
+<p>程序核心部分应使用Unicode，编码与解码应放在外围部分。</p>
+<h3 id="9-用生成器表达式来改写数据量较大的列表推导"><a href="#9-用生成器表达式来改写数据量较大的列表推导" class="headerlink" title="9.用生成器表达式来改写数据量较大的列表推导"></a>9.用生成器表达式来改写数据量较大的列表推导</h3><p>优点就是生成器不用一次载入，格式是(…)</p>
+<h3 id="13-try-except-else-finally"><a href="#13-try-except-else-finally" class="headerlink" title="13.try/except/else/finally"></a>13.try/except/else/finally</h3><p>try代码不应过多，只做主要判断，应写在else中。</p>
+<h3 id="14-尽量用异常来表示特殊情况，而不要返回None"><a href="#14-尽量用异常来表示特殊情况，而不要返回None" class="headerlink" title="14.尽量用异常来表示特殊情况，而不要返回None"></a>14.尽量用异常来表示特殊情况，而不要返回None</h3><p>因为None可以通过if条件语句。</p>
+<h3 id="17-在参数上迭代时，要小心"><a href="#17-在参数上迭代时，要小心" class="headerlink" title="17.在参数上迭代时，要小心"></a>17.在参数上迭代时，要小心</h3><p>因为迭代器只能迭代一次。</p>
+<h3 id="20-用None和文档字符串来描述具有动态默认值的参数"><a href="#20-用None和文档字符串来描述具有动态默认值的参数" class="headerlink" title="20.用None和文档字符串来描述具有动态默认值的参数"></a>20.用None和文档字符串来描述具有动态默认值的参数</h3><p>也就是参数默认值不要给一个具体的，比如函数，或者空字典，因为默认参数在载入的时候只初始化一遍。如果return的恰好也是默认参数会出问题。</p>
+<h3 id="21-用只能以关键字形式指定的参数来确保代码明晰"><a href="#21-用只能以关键字形式指定的参数来确保代码明晰" class="headerlink" title="21.用只能以关键字形式指定的参数来确保代码明晰"></a>21.用只能以关键字形式指定的参数来确保代码明晰</h3><p>尽量不要采用位置赋值，而要采用关键字赋值，易读性强也更容易维护。</p>
+<p>为了避免关键字参数被按位置参数赋值，可以使用<em>*kwargs来提取参数，但是可读性差一点，要求增加函数文档，python3的话可以通过在位置参数和关键字参数中间增加一个` </em> `</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(number,dvisor, *, ignore=False)</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="25-用super初始化父类"><a href="#25-用super初始化父类" class="headerlink" title="25.用super初始化父类"></a>25.用super初始化父类</h3><p>python 3支持不带参数的super，所以没必要加参数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">super().__init__(...)</span><br></pre></td></tr></table></figure>
+<h3 id="26-只在私用mix-in组件的时候进行多重继承"><a href="#26-只在私用mix-in组件的时候进行多重继承" class="headerlink" title="26.只在私用mix-in组件的时候进行多重继承"></a>26.只在私用mix-in组件的时候进行多重继承</h3><p>这个了解一下吧，mix-in提供的就是一系列通用功能。</p>
+<h3 id="27-多用public属性，少用private属性"><a href="#27-多用public属性，少用private属性" class="headerlink" title="27.多用public属性，少用private属性"></a>27.多用public属性，少用private属性</h3><p>这个挺重要的，python的private属性实际上是假的，比如类Server含有一个<code>self.__post</code>的私有属性，虽然我无法通过函数去返回这个，但是我可以直接调用<code>_Server__post</code>来获得这个属性，那何必自欺欺人呢，大家都是成年人了。真需要的话不如加一个_，就当是提醒别人注意吧。</p>
+<h3 id="29-用纯属性来取代get和set方法"><a href="#29-用纯属性来取代get和set方法" class="headerlink" title="29. 用纯属性来取代get和set方法"></a>29. 用纯属性来取代get和set方法</h3><p>这不是python风格的…我也挺想吐槽了，根本没必要。</p>
+<h3 id="32-用-getarr-、-getattribute-和-setattr-实现按需生成的属性"><a href="#32-用-getarr-、-getattribute-和-setattr-实现按需生成的属性" class="headerlink" title="32. 用__getarr__、__getattribute__ 和__setattr__实现按需生成的属性"></a>32. 用<code>__getarr__</code>、<code>__getattribute__</code> 和<code>__setattr__</code>实现按需生成的属性</h3><p>这些就是在获取类中不存在的值的时候定义的操作，比如data中没有foo这个变量，那么当我调用data.foo的时候会去调用<code>__getarr__</code> 然后我在里面使用 setattr(self, name, value)就可以将foo这个变量添加到类的<code>__dict__</code> 中。</p>
+<h3 id="41-考虑使用concurrent-futures-来实现真正的平行计算"><a href="#41-考虑使用concurrent-futures-来实现真正的平行计算" class="headerlink" title="41.考虑使用concurrent.futures 来实现真正的平行计算"></a>41.考虑使用concurrent.futures 来实现真正的平行计算</h3><p>这里大概讲的多进程的东西，还提到了不要使用multiprocessing，说是有一些复杂特性，要避开？但python的多进程本来就挺麻烦的…</p>
+<h3 id="42-用functools-wraps定义函数修饰器"><a href="#42-用functools-wraps定义函数修饰器" class="headerlink" title="42. 用functools.wraps定义函数修饰器"></a>42. 用functools.wraps定义函数修饰器</h3><p>之所以要用这个，是因为修饰器会更改函数的名字，这可能影响调试器等的效果。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">trace</span><span class="params">(func)</span>:</span></span><br><span class="line"><span class="meta">	@wraps(func)</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">		<span class="comment"># ...</span></span><br><span class="line">	<span class="keyword">return</span> wrapper</span><br><span class="line">	</span><br><span class="line"><span class="meta">@trace</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fibonacci</span><span class="params">(n)</span></span></span><br><span class="line"><span class="function">	# ...</span></span><br></pre></td></tr></table></figure>
+<h3 id="43-考虑以contextlib和with语句来改写可复用的try-finally代码"><a href="#43-考虑以contextlib和with语句来改写可复用的try-finally代码" class="headerlink" title="43.考虑以contextlib和with语句来改写可复用的try/finally代码"></a>43.考虑以contextlib和with语句来改写可复用的try/finally代码</h3><p>这个可以定义一宗情景管理器，比如以下代码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@contextmanager</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">debug_logging</span><span class="params">(level)</span>:</span></span><br><span class="line">	logger = logging.getLogger()</span><br><span class="line">	old_level = logger.getEffectiveLevel()</span><br><span class="line">	logger . setLevel(level)</span><br><span class="line">	<span class="keyword">try</span>:</span><br><span class="line">		<span class="keyword">yield</span></span><br><span class="line">	<span class="keyword">finally</span>:</span><br><span class="line">		logger.setLevel(old_level)</span><br><span class="line"><span class="keyword">with</span> debug_logging(logging.DEBUG):</span><br><span class="line">    <span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+<p>这段代码定义了一个可以暂时提升logging的level的方法，在执行到yield的时候会进入with下面的语句执行，执行完毕后会返回，然后执行finally中的语句。</p>
+<h3 id="44-用copyreg实现可靠的pickle操作"><a href="#44-用copyreg实现可靠的pickle操作" class="headerlink" title="44.用copyreg实现可靠的pickle操作"></a>44.用copyreg实现可靠的pickle操作</h3><p>pickle是不可靠的序列化(json是可靠的序列化)，所以其只能建立在相互信任的程序之间使用。它可以保存一些类啊什么的，使用copyreg是在类的定义或者什么改变的条件下，依然可以load的解决方法。</p>
+<h3 id="46-使用内置算法与数据结构"><a href="#46-使用内置算法与数据结构" class="headerlink" title="46.使用内置算法与数据结构"></a>46.使用内置算法与数据结构</h3><p>这个用到再说吧，主要是有一些队列啊，有序字典(python 3.6+后字典都是有序的)，还有堆栈啊什么的，以后做leetcode可以用一用。</p>
+<h3 id="51-为自编的模块定义根异常，以便将调用者与API相隔离"><a href="#51-为自编的模块定义根异常，以便将调用者与API相隔离" class="headerlink" title="51.为自编的模块定义根异常，以便将调用者与API相隔离"></a>51.为自编的模块定义根异常，以便将调用者与API相隔离</h3><p>这个没啥，注意到基类比如叫Error继承自Exception就可以了。</p>
+<h3 id="53-用适当的方式打破循环依赖关系"><a href="#53-用适当的方式打破循环依赖关系" class="headerlink" title="53.用适当的方式打破循环依赖关系"></a>53.用适当的方式打破循环依赖关系</h3><p>我觉得还是不要写这种代码好了，如果真写了，再回来看吧</p>
+<h3 id="56-用unittest来测试全部代码"><a href="#56-用unittest来测试全部代码" class="headerlink" title="56.用unittest来测试全部代码"></a>56.用unittest来测试全部代码</h3><p>保留意见</p>
+<h3 id="57-用pdb来实现交互调试"><a href="#57-用pdb来实现交互调试" class="headerlink" title="57.用pdb来实现交互调试"></a>57.用pdb来实现交互调试</h3><p>这个要学一下，一个pdb.set_trace()就可以开始调试了，很方便啊。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+        <tag>effective</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近期计划</title>
+    <url>/2020/03/05/%E8%BF%91%E6%9C%9F%E8%AE%A1%E5%88%92/</url>
+    <content><![CDATA[<blockquote>
+<p>日常颓废，但是又没有什么动力干活，所以打算写点博客，同时督促自己干点活。不然就会一直咸鱼下去了…曾经的我还会因为DDL而临时抱佛脚…如今的我已经变成鸽子了…还是连环鸽…再这样下去要死。</p>
+</blockquote>
+<p>近期计划是2020.3.5~毕业前我要做的事情，列一个小list，完成什么都会在对应的板块下面更新我的最新进度，当然内容也会随时补充，就当个小日记吧。</p>
+<ul>
+<li>毕业设计</li>
+<li>数学</li>
+<li>科研</li>
+<li>比赛</li>
+</ul>
+<a id="more"></a>
+<h2 id="一、毕业设计"><a href="#一、毕业设计" class="headerlink" title="一、毕业设计"></a>一、毕业设计</h2><ul>
+<li>~ - 3.5 之前基本没干啥，都在颓废，或者在被编程打击自信心。就这两天干了点活，把数据预处理做了一下，昨晚和学姐探讨了一些模型中的一些选择性问题，仅此而已。</li>
+</ul>
+<h2 id="二、数学"><a href="#二、数学" class="headerlink" title="二、数学"></a>二、数学</h2><h3 id="2-1概率论与随机过程"><a href="#2-1概率论与随机过程" class="headerlink" title="2.1概率论与随机过程"></a>2.1概率论与随机过程</h3><ul>
+<li>~ - 3.5  发现这部分知识基本忘掉的差不多了，之前这几个月貌似也没怎么补习…目前打算新开一个专栏来记录一些笔记，书籍待定，计划是听网课，因为沉不住气来看书。</li>
+</ul>
+<h3 id="2-2线性代数"><a href="#2-2线性代数" class="headerlink" title="2.2线性代数"></a>2.2线性代数</h3><ul>
+<li>~ - 3.5 Linear Algebra Done Right 看了五章左右的样子，不过都没做笔记…感觉内容也不多，估计一个md就可以解决一本书的笔记了。</li>
+</ul>
+<h2 id="三、科研"><a href="#三、科研" class="headerlink" title="三、科研"></a>三、科研</h2><ul>
+<li>~ -  3.5 啥也没干，计划是PRML 接着看吧，这个不强求，因为毕设理论上也是科研，所以这个能看多少是多少，看时间吧。</li>
+</ul>
+<h2 id="四、比赛"><a href="#四、比赛" class="headerlink" title="四、比赛"></a>四、比赛</h2><ul>
+<li>~ - 3.5 之前参加了一个看山杯，说实在的没学到太多东西，很多东西其实可以现学现用，主要是熟悉了整个流程。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>碎碎念</category>
+      </categories>
+      <tags>
+        <tag>毕业设计</tag>
+        <tag>数学学习</tag>
+        <tag>科研学习</tag>
+        <tag>KDD CUP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GraphSAGE笔记</title>
+    <url>/2020/02/19/GraphSAGE%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<blockquote>
+<p>GraphSAGE是inductive learning，而原始的GCN一个是transductive learning，那么他们的差别在哪里呢？GraphSAGE又在讲一个什么东西呢？</p>
+</blockquote>
+<h2 id="一、什么是transductive什么是inductive"><a href="#一、什么是transductive什么是inductive" class="headerlink" title="一、什么是transductive什么是inductive"></a>一、什么是transductive什么是inductive</h2>]]></content>
+  </entry>
+  <entry>
     <title>矩阵的matmul运算</title>
     <url>/2020/01/26/%E7%9F%A9%E9%98%B5%E7%9A%84matmul%E8%BF%90%E7%AE%97/</url>
     <content><![CDATA[<blockquote>
@@ -92,14 +203,18 @@
 </blockquote>
 <a id="more"></a>
 <h3 id="pylint提示no-member"><a href="#pylint提示no-member" class="headerlink" title="pylint提示no-member"></a>pylint提示no-member</h3><p>比如对于一些第三方库，pytorch之类的，pylint会经常提示一些函数no-member，我们可以在配置(setting.json)里面加入要忽略错误的第三方库。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="string">"python.linting.pylintArgs"</span>: [</span><br><span class="line">    <span class="comment"># List of members which are set dynamically and missed by pylint inference</span></span><br><span class="line">    <span class="comment"># system, and so shouldn't trigger E1101 when accessed. Python regular</span></span><br><span class="line">    <span class="comment"># expressions are accepted.</span></span><br><span class="line">    <span class="comment"># https://github.com/pytorch/pytorch/issues/701</span></span><br><span class="line">    <span class="string">"--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"</span></span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">"python.linting.pylintArgs": [</span><br><span class="line"> # List of members which are set dynamically and missed by pylint inference</span><br><span class="line"> # system, and so shouldn't trigger E1101 when accessed. Python regular</span><br><span class="line"> # expressions are accepted.</span><br><span class="line"> # https://github.com/pytorch/pytorch/issues/701</span><br><span class="line"> 	<span class="string">"--generated-members=numpy.* ,torch.* ,cv2.* , cv.*"</span></span><br><span class="line"> ],</span><br></pre></td></tr></table></figure>
+<h3 id="使用cmder作为默认终端"><a href="#使用cmder作为默认终端" class="headerlink" title="使用cmder作为默认终端"></a>使用cmder作为默认终端</h3><p>cmder集成了一些linux的指令，比如head,ls,cat,echo等，所以使用起来非常方便，可以很大的提高效率。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line"># https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration </span><br><span class="line">"terminal.integrated.shell.windows": "cmd.exe",</span><br><span class="line">"terminal.integrated.shellArgs.windows": ["/K", "D:/cmder/vendor/init.bat"] # 这个填自己电脑里cmder的位置就可</span><br></pre></td></tr></table></figure>
+<p>顺便一提，如果你下的cmder不是便携版而是完整版，那它是自带git的，也省得下载git了，vscode配置git可以加上</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">"git.path": "d:/cmder/vendor/git-for-windows/bin/git.exe"</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>花里胡哨的东西</category>
       </categories>
       <tags>
-        <tag>vscode</tag>
         <tag>python</tag>
+        <tag>vscode</tag>
       </tags>
   </entry>
   <entry>
@@ -629,7 +744,7 @@ t \\
 <a id="more"></a>
 <p>众所周知，没有外接干预的情况下，热量从温度高传播到温度低的地方并且不可逆，根据著名的牛顿冷却定律（Newton Cool’s Law），热量传递的速度正比于温度梯度，直观上也就是某个地方A温度高，另外一个B地方温度低，这两个地方接触，那么温度高的地方的热量会以正比于他们俩温度差的速度从A流向B。</p>
 <h3 id="从一维空间开始"><a href="#从一维空间开始" class="headerlink" title="从一维空间开始"></a><strong>从一维空间开始</strong></h3><p>我们先建立一个一维的温度传播的模型，假设有一个均匀的铁棒，不同位置温度不一样，现在我们刻画这个铁棒上面温度的热传播随着时间变化的关系。预先说明一下，一个连续的铁棒的热传播模型需要列<strong>温度对时间和坐标的偏微分方程</strong>来解决，我们不想把问题搞这么复杂，我们把<strong>空间离散化</strong>，假设铁棒是一个<strong>一维链条</strong>，链条上每一个单元拥有一致的温度，温度在相邻的不同的单元之间传播，如下图</p>
-<p><img src="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%89)/链条.png" alt></p>
+<p><img src="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%89)/GCN要用到的数学知识系列(三" alt>/链条.png)</p>
 <p>对于第 $i$个单元，它只和 $i-1$与$i+1$两个单元相邻，接受它们传来的热量（或者向它们传递热量，只是正负号的差异而已），假设它当前的温度为，那么就有</p>
 <script type="math/tex; mode=display">
 {d\phi_i  \over dt} = k(\phi_{i+1} - \phi_i) - k(\phi_{i} - \phi_{i-1})</script><p>$k$和单元的比热容、质量有关是个常数。右边第一项是下一个单元向本单元的热量流入导致温度升高，第二项是本单元向上一个单元的热量流出导致温度降低。做一点微小的数学变换可以得到：</p>
@@ -645,7 +760,7 @@ t \\
 <p>那么，你肯定会问：你扯这么多有什么用呢？我还是看不到拉普拉斯算子和拉普拉斯矩阵还有GCN有半毛钱关系啊？</p>
 <p>不要急，目前只是第一步，让我们把这个热传导模型推广导拓扑空间，你就会发现它们其实刻画的是同一回事了！</p>
 <h3 id="图-Graph-上热传播模型的推广"><a href="#图-Graph-上热传播模型的推广" class="headerlink" title="图(Graph)上热传播模型的推广"></a><strong>图(Graph)上热传播模型的推广</strong></h3><p>现在，我们依然考虑热传导模型，只是这个事情不发生在欧氏空间了，发生在一个Graph上面。这个图上的每个结点（Node）是一个单元，且这个单元只和与这个结点相连的单元，也就是有边（Edge）连接的单元发生热交换。例如下图中，结点$1$只和结点$0、2、4$发生热交换，更远的例如结点5的热量要通过$4$间接的传播过来而没有直接热交换。</p>
-<p><img src="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%89)/温度.png" alt></p>
+<p><img src="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%89)/GCN要用到的数学知识系列(三" alt>/温度.png)</p>
 <p>我们假设热量流动的速度依然满足牛顿冷却定律，研究任一结点 $i$，它的温度随着时间的变化可以用下式来刻画</p>
 <script type="math/tex; mode=display">
 {d\phi \over dt} = -k \sum_{j}A_{ij}(\phi_i - \phi_j)</script><p>其中$A$是这个图的邻接矩阵(Adjacency Matrix)，定义非常直观： 对于这个矩阵中的每一个元素 ，如果节点$i$和$j$相邻，也就是它们之间存在一条边，那么$A_{ij}=1$，否则$A_{ij}=0$，我们只讨论简单那情况</p>
