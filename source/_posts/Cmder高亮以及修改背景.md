@@ -1,6 +1,7 @@
 ---
 title: Cmder高亮以及修改背景
 date: 2020-08-10 19:02:07
+mathjax: true
 categories:
 - 花里胡哨的东西
 tags:
@@ -174,6 +175,6 @@ cmder自带的一些主题属实难看，经常使用一些ide的同学可能会
 
 把这里的`Palette1`也是顺序更改就可以了，主要看你当前加入了多少主题。比如改成`Palette2`
 
-那么至此，我们就把主题t添加到了cmder中，之后主要在cmder的setting的颜色部分，选择你的方案就可以了，主义下面的颜色的Auto属性不要更改。
+那么至此，我们就把主题添加到了cmder中，之后主要在cmder的setting的颜色部分，选择你的方案就可以了，注意下面的颜色的Auto属性不要更改。
 
 ![theme](./Cmder高亮以及修改背景/theme.png)
