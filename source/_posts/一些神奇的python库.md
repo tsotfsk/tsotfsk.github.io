@@ -3,7 +3,16 @@ title: 一些神奇的python库
 date: 2020-08-10 20:28:37
 categories:
 - 花里胡哨的东西
-tags:[科研,python,sympy,line_profiler,memory_profiler,pdb,pipreqs,pigar,dis]
+tags:
+- 科研
+- python
+- sympy
+- line_profiler
+- memory_profiler
+- pdb
+- pipreqs
+- pigar
+- dis
 ---
 
 >主要是记录一些自己觉得科研或者项目可能用到的，但是又似乎不是那么大众的库，会随时更新。这里每一个库都会举一个小例子。因为记性不好，记不住api，所以也算是之后要用的话，一个简单的小笔记吧。
