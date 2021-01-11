@@ -53,14 +53,14 @@
 <meta property="og:site_name" content="咸鱼">
 <meta property="og:description" content="前段时间看到了一道十分有趣的数学题，如下  \begin{align*} &amp;x+y+z&#x3D;1 \\ &amp;x^2+y^2+z^2&#x3D;2 \\ &amp;x^3+y^3+z^3&#x3D;3 \\ &amp;\cdots \\ &amp;x^5+y^5+z^5&#x3D;? \end{align*}这规律看着挺明显哈，那$x^5+y^5+z^5$肯定等于$5$啊，这题小学僧都随便做~那很不好意思哦，这道题的答案其实是$6$(笑。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://tsotfsk.top/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80">
+<meta property="og:image" content="http://tsotfsk.top/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/result.png">
 <meta property="article:published_time" content="2019-12-18T10:53:00.000Z">
-<meta property="article:modified_time" content="2021-01-11T12:32:54.051Z">
+<meta property="article:modified_time" content="2021-01-11T13:50:08.596Z">
 <meta property="article:tag" content="群论">
 <meta property="article:tag" content="多项式">
 <meta property="article:tag" content="矩阵求解递推式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://tsotfsk.top/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80">
+<meta name="twitter:image" content="http://tsotfsk.top/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/result.png">
 
 <link rel="canonical" href="http://tsotfsk.top/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/">
 
@@ -239,7 +239,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 20:32:54" itemprop="dateModified" datetime="2021-01-11T20:32:54+08:00">2021-01-11</time>
+                <time title="修改时间：2021-01-11 21:50:08" itemprop="dateModified" datetime="2021-01-11T21:50:08+08:00">2021-01-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,7 +280,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -402,7 +402,7 @@ A=\begin{bmatrix}
 x^n+y^n+z^n=1.43084957^n+(-0.21542478+0.2647132j)^n+(-0.21542478-0.2647132j)^n</script><p>有人可能要质疑了，你这个解不行啊，不够math啊。说得好！！！我李某元也是这么认为的。那我就给你一组比较math的$x，y，z$的解，其实python的一个库sympy可以用来做符号计算，要求解我们的方程组，只需要下面几条代码就可以了</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sympy</span><br><span class="line">x = sympy.Symbol(<span class="string">'x'</span>)</span><br><span class="line">y = sympy.Symbol(<span class="string">'y'</span>)</span><br><span class="line">z = sympy.Symbol(<span class="string">'z'</span>)</span><br><span class="line">result = sympy.solve([x + y + z - <span class="number">1</span> , x**<span class="number">2</span> + y**<span class="number">2</span> + z**<span class="number">2</span> - <span class="number">2</span>, x**<span class="number">3</span> + y**<span class="number">3</span>+ z**<span class="number">3</span> - <span class="number">3</span>], [x, y, z])</span><br></pre></td></tr></table></figure>
 <p>输出的结果我给你整理一下哈，算了，懒得整理成latex的格式了，看个大概吧，嘻嘻~</p>
-<p><img src="/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/一道有趣的数学题(一" alt="result">/result.png)</p>
+<p><img src="/2019/12/18/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%80)/result.png" style="zoom:100%;"></p>
 <p>图中的$result[0],result[1],result[2]$分别可以对应$x，y，z$的一组解，注意这个方程其实是有$6$组解的，我们这里只给出三个让大家瞅瞅啥样哈。不知道这个结果是不是你比较喜欢，反正我不喜欢…</p>
 <p>好了，那么大功告成！！！！当然这道题也有更一般的解法，但是用到了群论、数论之类的，其实就是一些很基础的知识，只不过讲的高大上了点，和我的做法本质是一样的，这里不过多引入，有兴趣的可以看知乎上给出的<a href="https://zhuanlan.zhihu.com/p/96063757" target="_blank" rel="noopener">高大上的解法</a>。</p>
 
