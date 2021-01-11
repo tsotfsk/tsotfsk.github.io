@@ -113,7 +113,7 @@ tags:
 
 ## 实验结果
 
-我们使用RNDCG@50<sup>[2](#myfootnote2)</sup>来衡量我们推荐列表的效果
+我们使用RNDCG@50<sup>[1](#myfootnote1)</sup>来衡量我们推荐列表的效果
 
 |                  | Hit@50 | NDCG@50 | RHit@50 | RNDCG@50 | Improve |
 | ---------------- | ------ | ------- | ------- | -------- | ------- |
@@ -154,5 +154,5 @@ tags:
 
 [4] [A simple itemCF Baseline, score:0.1169(phase0-2)](https://tianchi.aliyun.com/forum/postDetail?spm=5176.12586969.1002.15.6c3f1f0bypIv8x&postId=103530)
 
-<a name="myfootnote2">1</a>: RNDCG@50 只计算测试集中曝光量最少的那一半商品的的NDCG
+<a name="myfootnote1">1</a>: RNDCG@50 只计算测试集中曝光量最少的那一半商品的的NDCG
 
