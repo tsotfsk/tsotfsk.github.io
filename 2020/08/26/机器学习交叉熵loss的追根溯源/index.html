@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/fish.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://tsotfsk.top').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="虽说交叉熵也算是机器学习常用的损失函数了，其想达到的目标很好理解，但是其中蕴藏的数学原理，我却一直似懂非懂，从未曾深入探究过。本文就本着钻研精神，来细细探究​交叉熵损失函数的来源以及具体的数学原理。当然，本文可能限于姿势水平，有些问题比较小白，当然我个人也希望讲解的更基础一点，而且还有一些问题往往也只能达到“知其然，而不知其所以然”的水平，如有错误或者疏漏，也欢迎各位大佬斧正。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习交叉熵loss的追根溯源">
+<meta property="og:url" content="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/index.html">
+<meta property="og:site_name" content="咸鱼">
+<meta property="og:description" content="虽说交叉熵也算是机器学习常用的损失函数了，其想达到的目标很好理解，但是其中蕴藏的数学原理，我却一直似懂非懂，从未曾深入探究过。本文就本着钻研精神，来细细探究​交叉熵损失函数的来源以及具体的数学原理。当然，本文可能限于姿势水平，有些问题比较小白，当然我个人也希望讲解的更基础一点，而且还有一些问题往往也只能达到“知其然，而不知其所以然”的水平，如有错误或者疏漏，也欢迎各位大佬斧正。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/image-20200829201110798.png">
+<meta property="og:image" content="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/image-20200829124157734.png">
+<meta property="og:image" content="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/%E5%9B%BE%E7%89%871-1598712911224.png">
+<meta property="article:published_time" content="2020-08-26T15:41:35.000Z">
+<meta property="article:modified_time" content="2020-09-06T06:35:37.005Z">
+<meta property="article:tag" content="交叉熵">
+<meta property="article:tag" content="最大似然">
+<meta property="article:tag" content="KL散度">
+<meta property="article:tag" content="相对熵">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/image-20200829201110798.png">
+
+<link rel="canonical" href="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>机器学习交叉熵loss的追根溯源 | 咸鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">咸鱼</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个热爱数学的小码农</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">52</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">19</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="咸鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习交叉熵loss的追根溯源
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-26 23:41:35" itemprop="dateCreated datePublished" datetime="2020-08-26T23:41:35+08:00">2020-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-06 14:35:37" itemprop="dateModified" datetime="2020-09-06T14:35:37+08:00">2020-09-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>虽说交叉熵也算是机器学习常用的损失函数了，其想达到的目标很好理解，但是其中蕴藏的数学原理，我却一直似懂非懂，从未曾深入探究过。本文就本着钻研精神，来细细探究​交叉熵损失函数的来源以及具体的数学原理。当然，本文可能限于姿势水平，有些问题比较小白，当然我个人也希望讲解的更基础一点，而且还有一些问题往往也只能达到“知其然，而不知其所以然”的水平，如有错误或者疏漏，也欢迎各位大佬斧正。</p>
+</blockquote>
+<a id="more"></a>
+<p>在具体讲解前，我引出几个小问题，大家感兴趣的话也可以先思考一下，我也会在本文中随着讲解慢慢解答这几个问题。</p>
+<ul>
+<li>什么是信息熵？什么是交叉熵？什么是相对熵(KL​散度)？</li>
+<li>如何从编码bit​数的角度理解上述概念?</li>
+<li>交叉熵被作为机器学习损失函数的必然性？</li>
+<li>分类任务为什么使用交叉熵，MSE​不行吗?</li>
+</ul>
+<h2 id="伯努利分布"><a href="#伯努利分布" class="headerlink" title="伯努利分布"></a>伯努利分布</h2><p>二元概率模型: 如果随机变量$X$只有两个取值$0,1$, 有$P(X=0)=p, p(X=1)=1-p$, 那么$X$关于$p$条件下的概率密度函数为</p>
+<script type="math/tex; mode=display">
+f(x|p)=p^{x}(1-p)^{1-x}</script><p>注意到这只是一个二元的, 那$x$不就两种情况嘛, 大家代入一下是很显然的~</p>
+<h2 id="最大似然-MLE"><a href="#最大似然-MLE" class="headerlink" title="最大似然(MLE)"></a>最大似然(MLE)</h2><p>什么是最大似然方法呢？举个简单的例子，氪金游戏的一大特色就是概率，比如抽卡的，大家是不是经常怀疑卡池里根本没有放入这张卡或者自己几率被暗调了？实际上这里大家就已经用到了最大似然方法。因为大家<strong>根据当前已经发生的事情推测抽到这张卡的概率为0</strong>，这本身就是一个求最大似然的过程。那我们不妨以此为例来引入$MLE$，一张卡$A$被抽到的概率为$p$, 那么每次抽卡只有两种情况:抽到$A$和没抽到$A$，记一次抽卡的结果为一个随机变量$X$,那么显然，这就是一个伯努利分布，我们容易得到</p>
+<script type="math/tex; mode=display">
+f(x|p)=p^{x}(1-p)^{1-x}</script><p>那么最大似然是在做一件什么事？它希望依据目前的情况来推演$p$的值，使得当前事件发生的概率最大。也就是说假设我们观测到了一个随机过程，比如$x={x_1,x_2,x_3, \cdots,x_n}$，每一个$x_i$对应的都是一个随机变量$X$，他们之间相互独立。对于抽卡来说，就是我们抽了$n$次卡，那么最大似然的公式就如下:</p>
+<script type="math/tex; mode=display">
+p = \mathop{\operatorname{argmax}}\limits_{p} \prod_{i=1}^n f(x_i|p)</script><p>因为$x_i$都是已经发生的，那么只有$p$是变量，之后就是求极值了。那么这个式子为什么这样呢？其实这本身蕴含了一种假设，就是<strong>已经发生的事件发生的概率是最大</strong>。比如大家抽卡时的思想”我抽了100抽都没中，卡池里根本没有这张卡！！”,  那么此时我们就是依据最大似然来推断了$p$的值，也就是$p$就是0。具体的用公式来求解的话，对于100次抽卡就有</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p &= \mathop{\operatorname{argmax}}\limits_{p} \prod_{i=1}^{100} (1-p) \\
+&=\mathop{\operatorname{argmax}}\limits_{p} (1-p)^{100} \\
+&=0
+\end{aligned}</script><h2 id="交叉熵"><a href="#交叉熵" class="headerlink" title="交叉熵"></a>交叉熵</h2><p>接下来讲讲交叉熵(CE)，相信大家接触机器学习中的分类任务，可能首先接触到的就是这么一个损失函数。</p>
+<script type="math/tex; mode=display">
+l=-\frac{1}{N}\sum_{i=1}^Ny\ln \widehat y</script><p>其思想很自然，但是其中蕴藏了什么知识呢？如果稍微追根溯源一下的话，我们就会接触到<code>信息熵</code>这个概念(如果你和我一样是一个本科学过通信原理的计算机人，希望你能回想起被通信原理支配的恐惧)，那么信息熵(以$2$为底时)的表示如下:</p>
+<script type="math/tex; mode=display">
+H(x)=-\sum_{i=1}^Np(x)\log_2 {p(x)}</script><p>信息熵衡量的是信息量的期望，或者说叫信道的不确定性，单位是bit。最简单的，比如发送方在信道只发送$0,1$字符，如果发送$1$字符的概率为$1$, 发送$0$字符的概率为$0$，那么传递的信息量依据上式计算就是$0$(注意$\lim\limits_{x\to0^+}  xlnx=0$)。这似乎是显然的，因为如果信道只发送字符$1$,那么接受者似乎接收不到任何有价值的信息, 因为我知道你一定会发$1$，这里面就没有任何不确定性。那么什么时候不确定性最大呢？显然是$P(X=1)=P(X=0)=\frac{1}{2}$的时候，因为这时候$0,1$等概率，我猜都不好猜，不确定性最大。数学证明也很简单，拉格朗日乘数法秒解。不过我这里并不想从这个角度来引入信息熵，实际上对于学过计网或者通原的同学来说，大家肯定对信道编码不陌生。</p>
+<p>首先我引入一个问题:</p>
+<blockquote>
+<p>对于一个字符集${s_1,s_2,s_3, \cdots, s_n}$，每个符号被发送的概率依次为${p(s_1),p(s_2),p(s_3),\cdots, p(s_n)}$，那么字符的最小编码的平均bit数是多少呢？</p>
+</blockquote>
+<p>实际上这个平均bit数就是信息熵，但是我这里不给出证明，因为想要对其严格证明实在过于繁琐，我尝试写了一页证明，也没写完。浪费了一下午的时间QAQ。另外如果给出证明，那这篇博客放眼望去全是公式，肯定没人喜欢看…而我也更多的是想和大家分享一种我自己或者我看到的见解，而不是班门弄斧的敲数学公式，毕竟数学很容易出错…有兴趣的同学可以尝试证明之，提示:数列均值极限定理，斯特林数，大数定理。</p>
+<p>这里我仅引入一个特例来说明他确实是最小编码的平均bit数。大家应该知道哈夫曼编码，实际上哈夫曼编码就是一种最优的编码方式。它的长度是最短的。那么实际上哈夫曼编码如果对于这么一个字符集比如${s_1,s_2,s_3,s_4}$，他们的概率又都是${\frac{1}{2},\frac{1}{4},\frac{1}{8},\frac{1}{8}}$来说，其平均查找长度就可以写成信息熵的形式。</p>
+<p><img src="/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/image-20200829201110798.png" alt="image-20200829201110798" style="zoom:60%;"></p>
+<p>显然，平均编码(查找)长度就是</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+L &= \frac{1}{2} \times 1 + \frac{1}{4} \times 2+\frac{1}{8} \times 3 + \frac{1}{8} \times 3 \\
+
+ &= \frac{1}{2} \times \log_22 + \frac{1}{4} \times \log_24 +\frac{1}{8} \times \log_28 + \frac{1}{8} \times \log_28 \\
+ &= -\sum_{i=1}^{n}p(s_i)\log_2 p(s_i)
+\end{aligned}</script><p>也就是说信息熵是可以表达最短平均编码长度，其中$-\log p(x)$可以反映字符$x$的信息编码长度。实际上在我刚才举的关于信道的例子中，我们默认信道是不会出错的，也就是不存在干扰。但是真实的信道显然不会如此，不然也不会做一些差错编码以及增加校验帧了。那么假设我们信道依然发送$0,1$字符，但是信道可能出错，那么就会有如下的情况发生。</p>
+<p><img src="/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/image-20200829124157734.png" alt="image-20200829124157734" style="zoom:60%;"></p>
+<p>假设左侧作为发送方，信道存在差错，其发送的信息满足于一个伯努利分布$X \sim B(p)$，对于接收方，其收到的信息满足一个伯努利分布$Y \sim B(q)$。那么现在问题来了，现在对于接收方来说，它得到的信息熵改变了吗？变多了还是变少了。我们将此时由这两个分布共同产生的信息熵定义为交叉熵。记为$H(X,Y)$，那么其公式如下</p>
+<script type="math/tex; mode=display">
+H(X,Y)=-\sum_{i = 1}^{|S|}p(s_i)\log q(s_i)</script><p>为什么长这样呢？实际上作为信息的接收方，我们如果拿得到的分布来做编码，那么此时的平均编码长度就是上式子~显然如果$Y$与$X$的分布不相等，那么这个平均编码的长度是要大于$X$平均编码的长度的。因为我们知道$X$的信息熵对应的编码是最优编码，你换了一套编码自然会比这个大，这也符合我们的直觉，那就是引入噪声使得信息熵增大了，其加大了不确定度，也增大了平均编码长度。也就是说有</p>
+<script type="math/tex; mode=display">
+H(X,Y)-H(X)>0</script><p>严格的数学证明参考<strong>Gibbs inequality</strong>。那么这个差值又是什么呢？实际上这个差值叫$KL$散度，也叫相对熵。相对熵描述的更像是一个信息差。那么相对熵就有如下等式</p>
+<script type="math/tex; mode=display">
+H(X|Y) = H(X,Y)-H(X)</script><p>其衡量的也是两个分布之间的差异，这个差异是非对称的。如下有个图比较直观</p>
+<p><img src="/2020/08/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%BA%A4%E5%8F%89%E7%86%B5loss%E7%9A%84%E8%BF%BD%E6%A0%B9%E6%BA%AF%E6%BA%90/图片1-1598712911224.png" alt="图片1" style="zoom:50%;"></p>
+<p>从文氏图也能比较清楚的看到，相对熵更像是<strong>一个分布比另外一个分布多出来的信息量</strong>。所以严格来讲，$KL$散度描述的并不是两个分布的距离，而更像是两个分布的相对差异。</p>
+<p>从平均编码长度的角度来说。<strong>信息熵描述了最优编码的长度。交叉熵描述了非最优编码的平均长度。而相对熵则描述的是非最优编码比最优编码多出来的长度。</strong></p>
+<h3 id="交叉熵被作为机器学习损失函数的必然性？"><a href="#交叉熵被作为机器学习损失函数的必然性？" class="headerlink" title="交叉熵被作为机器学习损失函数的必然性？"></a>交叉熵被作为机器学习损失函数的必然性？</h3><p>首先，这里有一个误区。我们机器学习真的使用的是交叉熵吗？不是。实际上我们真正使用的是$KL$散度。为什么呢？因为$KL$散度描述的就是两个分部之间的差异。那么对于机器学习，其描述的就是<strong>输出的数据分布的与模型输入的分布的差异</strong>，那么将其作为损失函数的思想是很自然的，因为我们希望模型能够捕捉到输入数据的分布，来达到输出的分布与输入的保持一致。但是，为什么我们用到的都是交叉熵呢？因为KL​散度和交叉熵的最小化在机器学习中是等价的。注意到交叉熵的公式</p>
+<script type="math/tex; mode=display">
+H(X,Y) = H(X|Y)+H(X)</script><p>在机器学习中，$X$就是数据，数据的分布是一个先验分布，换句话说，它是已知的。那么$H(X)$就是一个定值。而$Y$的分布就是我们模型输出的结果分布，它是未知的。那么机器学习最小化KL​散度就是在最小化交叉熵。</p>
+<h3 id="分类任务为什么使用交叉熵，MSE不行吗"><a href="#分类任务为什么使用交叉熵，MSE不行吗" class="headerlink" title="分类任务为什么使用交叉熵，MSE不行吗?"></a>分类任务为什么使用交叉熵，MSE不行吗?</h3><p>这里先抛出一个观点：</p>
+<blockquote>
+<p>交叉熵是对多项分布的$MLE$, $MSE$是对高斯分布的$MLE$，显然分类是一个多项分布，应该使用交叉熵</p>
+</blockquote>
+<p>我第一次见到这句话的时候，简直犹如醍醐灌顶。不得不说这个解释真的是一针见血。下面我们就来简单证明一下这个观点。</p>
+<blockquote>
+<p>1.交叉熵是多项分布的MLE</p>
+</blockquote>
+<p>首先依据我们开篇MLE的定义，我们这里仅以二项分布为例，加入我们有一组数据${x_1,x_2,\cdots,x_n}$，每个数据都服从二项分布$x_i\sim B(n,p)$。并且这些数据是独立同分布。那么有:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p &= \mathop{\operatorname{argmax}}\limits_{p}\prod_{i=1}^n f(x_i|p) \\
+&=\mathop{\operatorname{argmax}}\limits_{p}  \prod_{i=1}^n p^{x_i}(1-p)^{1-x_i} \\
+&=\mathop{\operatorname{argmax}}\limits_{p} \log \prod_{i=1}^n p^{x_i}(1-p)^{1-x_i} \\
+&=\mathop{\operatorname{argmax}}\limits_{p} \sum_{i=1}^n x_i\log p + (1-x_i)\log(1-p) \\
+&=\mathop{\operatorname{argmin}}\limits_{p} \sum_{i=1}^n -(x_i\log p + (1-x_i)\log(1-p))
+\end{aligned}</script><p>证毕。</p>
+<blockquote>
+<p>2.MSE是高斯分布的MLE</p>
+</blockquote>
+<p>MSE就是平方损失。假设我们有一组数据${x_1,x_2,\cdots,x_n}$。我们企图用$x_i=\theta(x_i)+\epsilon_i$来拟合这些$x$，我们认为这些误差满足高斯分布$\epsilon_i \sim N(0,\sigma^2)$。并且这些误差是独立同分布。那么对于误差的高斯分布的最大似然，就有</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\theta &= \mathop{\operatorname{argmax}}\limits_{\theta} \prod_{i=1}^n f(\epsilon_i|\theta) \\
+&= \mathop{\operatorname{argmax}}\limits_{\theta} \prod_{i=1}^n\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{\epsilon_i^2}{2\sigma^2}} \\
+&= \mathop{\operatorname{argmax}}\limits_{\theta} \log\prod_{i=1}^n\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{\epsilon_i^2}{2\sigma^2}} \\
+&= \mathop{\operatorname{argmax}}\limits_{\theta} \sum_{i=1}^n \log \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{\epsilon_i^2}{2\sigma^2}} \\
+&= \mathop{\operatorname{argmax}}\limits_{\theta} \sum_{i=1}^n n\log \frac{1}{\sqrt{2\pi}\sigma} - \sum_{i=1}^n{\frac{\epsilon_i^2}{2\sigma^2}} \\ 
+&= \mathop{\operatorname{argmin}}\limits_{\theta} \sum_{i=1}^n \epsilon_i^2 \\ 
+&= \mathop{\operatorname{argmin}}\limits_{\theta} \sum_{i=1}^n (x-\theta(x))^2
+\end{aligned}</script><p>证毕。</p>
+<p>那么结论就很显然了。另外，我们也可以更显然的知道MSE一般用于回归的任务。事实上，之于推荐系统，我们也会有”正样例”和“负样例”，那么这也是一种二分类。所以推荐系统也往往也会使用交叉熵来作为损失函数，也叫logloss​。另外按照它的思想，我们模型就会拟合正样例和负样例的数据分布。也正因如此，我们的测试数据往往需要和训练数据保持一致的分布才能达到最好的效果。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%A4%E5%8F%89%E7%86%B5/" rel="tag"># 交叉熵</a>
+              <a href="/tags/%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6/" rel="tag"># 最大似然</a>
+              <a href="/tags/KL%E6%95%A3%E5%BA%A6/" rel="tag"># KL散度</a>
+              <a href="/tags/%E7%9B%B8%E5%AF%B9%E7%86%B5/" rel="tag"># 相对熵</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/10/%E4%B8%80%E4%BA%9B%E7%A5%9E%E5%A5%87%E7%9A%84python%E5%BA%93/" rel="prev" title="一些神奇的python库">
+      <i class="fa fa-chevron-left"></i> 一些神奇的python库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/31/word2vec%E7%9A%84NCELoss%E8%AF%A6%E8%A7%A3/" rel="next" title="word2vec的NCELoss详解">
+      word2vec的NCELoss详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#伯努利分布"><span class="nav-number">1.</span> <span class="nav-text">伯努利分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最大似然-MLE"><span class="nav-number">2.</span> <span class="nav-text">最大似然(MLE)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉熵"><span class="nav-number">3.</span> <span class="nav-text">交叉熵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#交叉熵被作为机器学习损失函数的必然性？"><span class="nav-number">3.1.</span> <span class="nav-text">交叉熵被作为机器学习损失函数的必然性？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分类任务为什么使用交叉熵，MSE不行吗"><span class="nav-number">3.2.</span> <span class="nav-text">分类任务为什么使用交叉熵，MSE不行吗?</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">记录科研中遇到的各种问题，也会分享一些有趣的数学知识。</div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tsotfsk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;tsotfsk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/1337990880" title="QQ → 1337990880"><i class="fa fa-fw fa-qq"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/damengji" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;damengji" rel="noopener" target="_blank"><i class="fa fa-fw fa-pencil-square"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.cnblogs.com/tsotfsk/" title="博客园 → https:&#x2F;&#x2F;www.cnblogs.com&#x2F;tsotfsk&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-codiepie"></i>博客园</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">56k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:58</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'zen7sY1TfclXVpV2s6BIlKUX-gzGzoHsz',
+      appKey: '6A9hsTxX5imXx7y4LcN5QLzX',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

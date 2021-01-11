@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/fish.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://tsotfsk.top').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="二、卷积的定义和性质 卷积(Convolution)是一个在信号与系统以及机器学习领域极为常见的一个词，本文将从离散和连续两个角度来讲解卷积的定义与性质，同时结合上一讲的傅里叶变换，我们也证明后续在了解GCN时要用到的相关定理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCN要用到的数学知识系列(二)">
+<meta property="og:url" content="http://tsotfsk.top/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="咸鱼">
+<meta property="og:description" content="二、卷积的定义和性质 卷积(Convolution)是一个在信号与系统以及机器学习领域极为常见的一个词，本文将从离散和连续两个角度来讲解卷积的定义与性质，同时结合上一讲的傅里叶变换，我们也证明后续在了解GCN时要用到的相关定理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-15T01:59:49.000Z">
+<meta property="article:modified_time" content="2020-09-06T06:35:37.003Z">
+<meta property="article:tag" content="离散卷积">
+<meta property="article:tag" content="图形处理中的卷积">
+<meta property="article:tag" content="傅里叶变换">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://tsotfsk.top/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%BA%8C)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>GCN要用到的数学知识系列(二) | 咸鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">咸鱼</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个热爱数学的小码农</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">52</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">19</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%BA%8C)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="咸鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GCN要用到的数学知识系列(二)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-15 09:59:49" itemprop="dateCreated datePublished" datetime="2019-12-15T09:59:49+08:00">2019-12-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-06 14:35:37" itemprop="dateModified" datetime="2020-09-06T14:35:37+08:00">2020-09-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
+                    <span itemprop="name">GCN要用到的数学知识</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86/%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%AE%9A%E4%B9%89%E5%92%8C%E6%80%A7%E8%B4%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">卷积的定义和性质</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%BA%8C)/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%BA%8C)/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="二、卷积的定义和性质"><a href="#二、卷积的定义和性质" class="headerlink" title="二、卷积的定义和性质"></a><strong>二、卷积的定义和性质</strong></h2><blockquote>
+<p>卷积(Convolution)是一个在信号与系统以及机器学习领域极为常见的一个词，本文将从离散和连续两个角度来讲解卷积的定义与性质，同时结合上一讲的傅里叶变换，我们也证明后续在了解GCN时要用到的相关定理。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="离散型卷积"><a href="#离散型卷积" class="headerlink" title="离散型卷积"></a><strong>离散型卷积</strong></h3><p>也许你玩过大型多人在线角色扮演游戏(MMORPG)游戏，这类游戏里往往总和<strong>挂dot</strong>离不开，所谓挂dot就是指释放一个技能，让对方持续掉血，而dot的英文就是Damage over time。那么问题来了，现在如果我们挂dot的技能冷却时间是$1$秒，也就是说我们每隔$1$秒就可以对敌人挂一个dot，这个dot伤害每次命中后持续$5$秒，dot命中后每秒对敌人造成$8$点伤害，并且之后每次再挂dot的伤害是之前的$1/2$，也就是说第二次挂dot命中后就是每秒造成就是$4$点伤害$\cdots$以此类推。那么问题来了，我们现在只通过挂dot，在$ns$内可以对敌人造成多少伤害？</p>
+<p>这里我们先从一个简单的例子去考虑，假设我们求$4s$内的情况，时间区间的话考虑到边界条件，我们记其为左闭右开区间，就是$[0,4)$，那么容易知道，我们分别在$0s$，$1s，2s，3s$这四个时刻挂了dot。</p>
+<p>$0s$时刻挂的dot持续了$4s$，总计造成了$8+8+8+8 = 32$点伤害</p>
+<p>$1s$时刻挂的dot持续了$3s$，总计造成了$4+4+4 = 12$点伤害</p>
+<p>$2s$时刻挂的dot持续了$2s$，总计造成了$2+2= 4$点伤害</p>
+<p>$3s$时刻挂的dot持续了$1s$，总计造成了$1$点伤害</p>
+<p>所以在这$4s$内，我们造成的总伤害是$32+12+4+1= 49$ 点。</p>
+<p>那这个问题和我们今天的主角卷积又有什么关系呢？不急，我们慢慢来…</p>
+<p>注意到上面问题的解的关键在于时间，我们隐约察觉到$ns$内的总伤害是可以写一个关于$n$的公式出来的。那么我们现在把问题一般化，初始条件下敌方身上无dot，那么第一个dot持续$t$秒可以造成的总伤害记为$g(t)$，那么显然有</p>
+<script type="math/tex; mode=display">
+g(t) = \begin{cases}
+{8t}  & t \in \{ 1,2,3,4,5\}\\ 
+40    & t \ge 6, t \in N 
+\end{cases}</script><p>但是每挂一层dot，这层dot就衰减为上一次的$1/2$，这里记初始衰减为$1$，也就是没衰减，我们可以计算$ts$挂出去的dot应该衰减到了最初的多少，记其为$f(t)$，那么有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+& f(t)=0.5^t \\
+\end{align*}</script><p>易知，我们$ts$释放的dot获得的衰减为$f(t)$，这个dot实际作用时间是$n-t$，那么$n-t$秒内的无衰减的总伤害就是$g(n-t)$，那么显然$ts$时候命中的dot在这$n$秒以内造成的伤害是$f(t)g(n-t)$，我们记要求的$ns$内总伤害为$F(n)$，那么易知</p>
+<script type="math/tex; mode=display">
+F(n) = \sum_{t=0}^{n-1}f(t)g(n-t)</script><p>是不是有内味儿了？那现在我们把它推广到连续的情况。</p>
+<h3 id="连续型卷积"><a href="#连续型卷积" class="headerlink" title="连续型卷积"></a><strong>连续型卷积</strong></h3><p>因为现实生活中很多东西是连续的，不像游戏中的dot可能$1s$才能造成一次伤害。其实信号与系统方面的卷积也是这么个意思。此时$f(t)$就是$t$时刻衰减的程度，也可以称之为信号此刻的强度或者幅值，那么$g(n-t)$就是这个信号作用$n-t$秒内的响应，那么$ns$时刻的输出是什么呢？</p>
+<script type="math/tex; mode=display">
+F(n) = \int_{0}^{\infty}f(t)g(n-t) \space dt</script><p>当然定义域也可以拓展为$(-\infty, \infty)$，这里时间的负无穷可以理解为相对时间。数学中通过用*来描述卷积，也就是记函数$f(t)$与函数$g(t)$的卷积为</p>
+<script type="math/tex; mode=display">
+f * g = \int_{-\infty}^{\infty} f(t) g(n-t) \space dt</script><p>至此，我们已经引入了卷积，那么有好奇的小伙伴也会问了？你讲的这个卷积和机器学习中的卷积是一回事吗？</p>
+<h3 id="图像处理中的卷积"><a href="#图像处理中的卷积" class="headerlink" title="图像处理中的卷积"></a><strong>图像处理中的卷积</strong></h3><p>因为我们输入的图像是一个张量<sup><a href="#fn_1" id="reffn_1">1</a></sup>，比如$32 \times 32 \times 3 $，其中图片分辨率是$32\times32$，通道数为3，比如$RGB$三个通道。注意到我们之前讲述的离散卷积，它在做的事其实也可以看做是<strong>加权</strong>和<strong>求和</strong>，图像中的卷积往往也是利用了这两个性质，这部分知识是CNN(Convolutional Neural Network)中要用到的，但是我们不在此赘述CNN的细节，只是简单的给出一个例子，让读者能明白一个卷积可以对一个图像做什么事？</p>
+<p>一个图像处理中非常有名的卷积，$\pmb{prewitt}$算子，在介绍它之前，我们先引入灰度的概念。一个图像的灰度最简单的求法就是取$RGB$三个通道的平均值，也就是$Gray=(R+G+B)/3$，之后令$R=G=B=$$Gray$即可得到一个$RGB$图像的灰度图，$Gray\in [0,255]$，灰度越大的点越趋近与白色，灰度越小的点约趋近于黑色。这个$prewitt$算子其实是一个二维的张量，所以其可以作用在一个灰度图上。这个算子往往用来做边缘检测，它的形式如下</p>
+<script type="math/tex; mode=display">
+V=\begin{bmatrix}
+-1 &0, &1 \\
+-1 &0, &1 \\
+-1 &0, &1
+\end{bmatrix}
+H=\begin{bmatrix}
+1 &1 &1 \\
+0 &0 &0 \\
+-1 &-1&-1
+\end{bmatrix}</script><p>其中$H$用来检测水平边缘，$V$用来检测竖直边缘。那么它是如何做到边缘检测的呢？首先我们需要知道如何定义边缘。比如只含有白和黑两种颜色的图，这里我懒于画图，直接用矩阵的形式来表示这幅图的灰度图</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+255 &255 &255 &255 &255 &255 &255 &255\\
+255 &255 &255 &255 &255 &255 &255 &255\\
+255 &255 &0 &0 &0 &0 &255 &255\\
+255 &255 &0 &0 &0 &0 &255 &255\\
+255 &255 &0 &0 &0 &0 &255 &255\\
+255 &255 &0 &0 &0 &0 &255 &255\\
+255 &255 &255 &255 &255 &255 &255 &255\\
+255 &255 &255 &255 &255 &255 &255 &255
+\end{bmatrix}</script><p>$Perfect!!!!$这幅图中央为$0$点的点是黑色，周围$255$的点为白色，那么显然边缘产生在255和0之间的那两个矩形。</p>
+<p>其实所谓边缘就是<strong>灰度变化大于阈值的点</strong>，如何衡量变化呢？函数中我们知道可以用导数或者梯度，可图像不是连续的，我们不能求导，那该如何做呢？<strong>差分</strong>来近似就可以了！这里$prewitt$算子水平方向用$ f ‘(x) = f(x + 1) - f(x - 1) $近似计算一阶差分，将其系数提出就得到了$[-1,0,1]$，垂直方向同理。</p>
+<p>那么如果我们要在水平和垂直混合检测边缘只需要让$prewitt$算子的两个矩阵像CNN一样分别滑过矩阵，得到每个点的水平和垂直变化情况，分别记为$H(x,y),V(x,y)$，然后计算$\sqrt{H(x,y)^{2} + V(x,y)^{2}}$即可，如果这个值大于阈值，那么它就属于边缘。显然$prewitt$算子是利用像素点的上下、左右相邻点灰度差在边缘达到极值这一现象来检测边缘的</p>
+<p>那么其实有心的读者应该考虑到了，<strong>$prewitt$算子和图像卷积可以用来提取边缘特征，那是否有一些卷积核可以用来提取其它特征吗？直觉告诉我们应该是有的，CNN就是基于这一思想，将卷积核作为待训练的参数，进而提取特征的。</strong></p>
+<h3 id="卷积在傅里叶变换中的性质"><a href="#卷积在傅里叶变换中的性质" class="headerlink" title="卷积在傅里叶变换中的性质"></a><strong>卷积在傅里叶变换中的性质</strong></h3><p>GCN主要用到的性质就是<strong>卷积的傅里叶变换等于傅里叶变换的乘积</strong>，也就是</p>
+<script type="math/tex; mode=display">
+\mathcal F[f*g]=\mathcal F[f] \times  \mathcal F[g]</script><p>要证明这个定理其实很简单，注意到积分上下限都是无穷，所以可以直接交换积分次序，那么就有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\mathcal F[f * g] =& \int_{-\infty}^{\infty} (\int_{-\infty}^{\infty} f(\tau) g(t - \tau) \space
+ d \tau) \space e^{-jwt} dt \\
+ =& \int_{-\infty}^{\infty} f(\tau) e^{-jw\tau}\space d\tau 
+ \int_{-\infty}^{\infty} g(t-\tau) e^{-jw(t-\tau)}\space d(t-\tau) \\
+ =& \mathcal F[f] \times \mathcal F[g]
+\end{align*}</script><p>显然如果将这个推广到离散傅里叶变换中去的话，已知对一个自然基下的列向量做傅里叶变换可以得到它在新的基下的坐标<sup><a href="#fn_2" id="reffn_2">2</a></sup>也就是说</p>
+<script type="math/tex; mode=display">
+\mathcal x=F[v]= U^Tv</script><p>其中$U$是新的基下组成的矩阵，那么两个向量$v,u$的卷积的傅里叶变换就有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\mathcal F[v*u]=&\mathcal F[v] \times \mathcal F[u] \\
+=& U^Tv \times U^Tu
+\end{align*}</script><p>这里的乘法其实是哈达马积(Hadamard product)，注意到$U^{T} v$以及$U^{T} u$都是相同维度的列向量，所以这里的乘积实际上也就是对应元素直接相乘。</p>
+<p>谢谢阅读~~~如有错误或者疏漏欢迎指正。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%A6%BB%E6%95%A3%E5%8D%B7%E7%A7%AF/" rel="tag"># 离散卷积</a>
+              <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%A4%84%E7%90%86%E4%B8%AD%E7%9A%84%E5%8D%B7%E7%A7%AF/" rel="tag"># 图形处理中的卷积</a>
+              <a href="/tags/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" rel="tag"># 傅里叶变换</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/14/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%80)/" rel="prev" title="GCN要用到的数学知识系列(一)">
+      <i class="fa fa-chevron-left"></i> GCN要用到的数学知识系列(一)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/12/15/GCN%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86%E7%B3%BB%E5%88%97(%E4%B8%89)/" rel="next" title="GCN要用到的数学知识系列(三)">
+      GCN要用到的数学知识系列(三) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#二、卷积的定义和性质"><span class="nav-number">1.</span> <span class="nav-text">二、卷积的定义和性质</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#离散型卷积"><span class="nav-number">1.1.</span> <span class="nav-text">离散型卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连续型卷积"><span class="nav-number">1.2.</span> <span class="nav-text">连续型卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图像处理中的卷积"><span class="nav-number">1.3.</span> <span class="nav-text">图像处理中的卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积在傅里叶变换中的性质"><span class="nav-number">1.4.</span> <span class="nav-text">卷积在傅里叶变换中的性质</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">记录科研中遇到的各种问题，也会分享一些有趣的数学知识。</div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tsotfsk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;tsotfsk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/1337990880" title="QQ → 1337990880"><i class="fa fa-fw fa-qq"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/damengji" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;damengji" rel="noopener" target="_blank"><i class="fa fa-fw fa-pencil-square"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.cnblogs.com/tsotfsk/" title="博客园 → https:&#x2F;&#x2F;www.cnblogs.com&#x2F;tsotfsk&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-codiepie"></i>博客园</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">56k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:58</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'zen7sY1TfclXVpV2s6BIlKUX-gzGzoHsz',
+      appKey: '6A9hsTxX5imXx7y4LcN5QLzX',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

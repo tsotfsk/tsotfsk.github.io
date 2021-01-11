@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/fish.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://tsotfsk.top').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="最近知乎关注太多数学问题了，总是莫名其妙给我推送很多数学题，所以俺又来分享看到的有趣的题啦~~~  已知$x_1,x_2,\cdots, x_n$为不全为$0$的实数，那么求如下式子的最大值  {x_1x_2 + x_2x_3 + x_3x_4 + \cdots + x_{n-1}x_n \over x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 }">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一道有趣的数学题(二)">
+<meta property="og:url" content="http://tsotfsk.top/2019/12/30/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="咸鱼">
+<meta property="og:description" content="最近知乎关注太多数学问题了，总是莫名其妙给我推送很多数学题，所以俺又来分享看到的有趣的题啦~~~  已知$x_1,x_2,\cdots, x_n$为不全为$0$的实数，那么求如下式子的最大值  {x_1x_2 + x_2x_3 + x_3x_4 + \cdots + x_{n-1}x_n \over x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 }">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-30T03:43:23.000Z">
+<meta property="article:modified_time" content="2020-09-06T06:35:37.005Z">
+<meta property="article:tag" content="切比雪夫多项式">
+<meta property="article:tag" content="二次型">
+<meta property="article:tag" content="半正定矩阵">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://tsotfsk.top/2019/12/30/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%BA%8C)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>一道有趣的数学题(二) | 咸鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">咸鱼</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个热爱数学的小码农</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">52</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">19</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2019/12/30/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%BA%8C)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="咸鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一道有趣的数学题(二)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-30 11:43:23" itemprop="dateCreated datePublished" datetime="2019-12-30T11:43:23+08:00">2019-12-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-06 14:35:37" itemprop="dateModified" datetime="2020-09-06T14:35:37+08:00">2020-09-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E5%AD%A6%E6%9D%82%E8%B0%88/" itemprop="url" rel="index">
+                    <span itemprop="name">数学杂谈</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/30/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%BA%8C)/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/30/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%BA%8C)/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>最近知乎关注太多数学问题了，总是莫名其妙给我推送很多数学题，所以俺又来分享看到的有趣的题啦~~~</p>
+</blockquote>
+<p>已知$x_1,x_2,\cdots, x_n$为不全为$0$的实数，那么求如下式子的最大值</p>
+<script type="math/tex; mode=display">
+{x_1x_2 + x_2x_3 + x_3x_4 + \cdots + x_{n-1}x_n \over x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 }</script><a id="more"></a>
+<p>这道题很容易陷入一个误区，就是直接使用均值不等式</p>
+<script type="math/tex; mode=display">
+x_1x_2 \leq {x_1^2 + x_2^2 \over 2}</script><p>那么依此类推是不是就可以得到结果了呢？注意到这么做的话，分子实际上就会变成</p>
+<script type="math/tex; mode=display">
+{x_1^2 \over 2}+x_2^2 + x_3^2 + \cdots +x_{n-1}^2 + {x_n^2 \over 2}</script><p>它并不会和分母消掉。那么究竟如何来做这道题呢？我这里先给出一个一般解法</p>
+<h2 id="一般解法"><a href="#一般解法" class="headerlink" title="一般解法"></a><strong>一般解法</strong></h2><p>我们不妨从$n=2$开始考虑，那么显然</p>
+<script type="math/tex; mode=display">
+{x_1x_2  \over x_1^2 + x_2^2 } \leq {x_1x_2  \over 2x_1x_2 }={1\over2}</script><p>那么$n=3$呢?</p>
+<script type="math/tex; mode=display">
+{x_1x_2 + x_2x_3 \over x_1^2 + x_2^2 +x_3^2}</script><p>注意到，这里我们依然可以使用均值不等式，只要对分母一分为二就可以了，目的是为了配出分子的倍数</p>
+<script type="math/tex; mode=display">
+{x_1x_2 + x_2x_3 \over x_1^2 + x_2^2 +x_3^2}={x_1x_2 + x_2x_3 \over x_1^2 + {x_2^2 \over 2 } +{x_2^2 \over 2 }  +x_3^2} \leq {x_1x_2 + x_2x_3 \over \sqrt 2 x_1x_2 + \sqrt 2x_2x_3}= {\sqrt 2 \over 2}</script><p>注意等号成立的条件是$x_1^2 = {x_2^2 \over 2 } =x_3^2$，那$n=4$呢？</p>
+<script type="math/tex; mode=display">
+{x_1x_2 + x_2x_3 +x_3x_4 \over x_1^2 + x_2^2 +x_3^2 +x_4^2}</script><p>那么仿照前面的思路，我们知道可以对分母进行拆分，目的是让分母放缩后是分子的倍数，可是当$n=4$的时候似乎拆分方法不是那么直接，但我们知道，拆分项肯定在$x_2和x_3$这两项，为什么呢？因为注意每用一次不等式是两项放缩为一项，那么要放缩为分子这种三项的形式，就需要六项，但分母只有四项，所以还需要两项，我们不妨固定首尾，那么就只需要拆分中间的那些项就可以。既然拆分方法不明了，我们不妨用待定系数的方法</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&{x_1x_2 + x_2x_3 +x_3x_4 \over (x_1^2 + {\lambda x_2^2}) + ({(1-\lambda) x_2^2} + {\mu x_3^2}) + {((1-\mu)x_3^2} +x_4^2)}\\
+& \leq {x_1x_2 + x_2x_3 +x_3x_4 \over 2\sqrt \lambda x_1x_2 +2 \sqrt{(1-\lambda)\mu}x_2x_3 +  2 \sqrt {1-\mu} x_3x_4 }
+\end{align*}</script><p>为了让分母这些系数相等，以便和分子消掉，那么就有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+2\sqrt \lambda = 2 \sqrt{(1-\lambda)\mu}=2\sqrt{1-\mu} \tag{1}
+\end{align*}</script><p>那么显然就有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&2\sqrt \lambda = 2\sqrt{1-\mu}\\
+=>&\lambda = 1-\mu \\
+&2 \sqrt{(1-\lambda)\mu}=2\sqrt{1-\mu}\\
+=>&\mu = \sqrt {1-\mu} \\ 
+=>&\mu = { \sqrt 5-1\over 2}(取\mu在[0,1]范围内的) \\
+\end{align*}</script><p>那么对于我们要求的结果就有</p>
+<script type="math/tex; mode=display">
+{x_1x_2 + x_2x_3 +x_3x_4 \over 2\sqrt \lambda x_1x_2 +2 \sqrt{(1-\lambda)\mu}x_2x_3 +  2 \sqrt {1-\mu} x_3x_4 }  \leq {1\over 2\mu} = { \sqrt 5+1\over 4}</script><p>这样继续做下去显然没有什么问题，但注意到，越往后，我们求解这个方程的复杂度就会越高，也就是这个方程的变量就会越多，$n$项就是$n-2$个变量，求解起来比较繁琐，我自己试了一下，发现里面还是有很多问题的，懒于计算，这里留作待探索内容，放在文末，并给我的一些思考。那么除了这种做法是否还有其它做法呢？当然有！~</p>
+<h2 id="二次型的解法"><a href="#二次型的解法" class="headerlink" title="二次型的解法"></a><strong>二次型的解法</strong></h2><p>假设我们令比值为$a$,也就是说</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+{x_1x_2 + x_2x_3 + x_3x_4 + \cdots + x_{n-1}x_n \over x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 }= a 
+\end{align*}</script><p>我们要求的是$a$的最大值，使得对任意的不全为$0$的$x_1,\cdots,x_n $都能满足</p>
+<script type="math/tex; mode=display">
+\\
+x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 - {1\over a}(x_1x_2+x_2x_3+\cdots+x_{n-1}x_n)\geq 0</script><p>注意到这其实是个二次型问题，我们令</p>
+<script type="math/tex; mode=display">
+f(x)=x_1^2 + x_2^2 + x_3^2 + \cdots +x_n^2 - {1\over a}(x_1x_2+x_2x_3+\cdots+x_{n-1}x_n)</script><p>二次型可以表示为$x^TAx$，将$f(x)$表示为这种形式</p>
+<script type="math/tex; mode=display">
+f(x)=
+\begin{bmatrix}
+x_1 & \cdots & x_n
+\end{bmatrix}
+\begin{bmatrix} 1 & -{ 1 \over2a}  \\
+-{1 \over 2a}  & 1 & -{1 \over 2a}  \\
+& -{1 \over 2a} & \ddots & \ddots \\
+& & \ddots & \ddots & -{1 \over 2a} \\
+& & & -{1 \over 2a} & 1
+\end{bmatrix}_{ n \times n}
+\begin{bmatrix}
+x_1 \\
+\vdots \\
+x_n
+\end{bmatrix}</script><p>那么对于任意的$x$这个$f(x)\geq0$，也就是说矩阵$A$要是半正定的(这就是半正定的定义)。而半正定矩阵的充要条件是有$n$个非负特征值，那么问题就转化为了，什么样的正数$a$可以使得$A$的特征值非负。</p>
+<p>那么问题来了，这个矩阵$A$的特征值如何求呢？按照一般的求法那么有</p>
+<script type="math/tex; mode=display">
+|A - \lambda E| = \begin{bmatrix}
+1 - \lambda & - { 1 \over 2a}  \\ 
+{-} {1 \over 2a}  & 1 - \lambda & - { 1 \over 2a}  \\ 
+& - {1 \over 2a} & \ddots & \ddots \\ 
+& & \ddots & \ddots & -{1 \over 2a} \\ 
+& & & -{1 \over 2a} & 1- \lambda
+\end{bmatrix} _ {n \times n}</script><p>可是这个行列式也不好求啊！！！没关系，我们记其为$D_n$，注意到这个行列式的值是可以写成递推式的，如果我们按第一行展开，那么就有</p>
+<script type="math/tex; mode=display">
+D_n=(1-\lambda)D_{n-1}-(-{1\over2a})(-{1\over2a})D_{n-2}=(1-\lambda)D_{n-1}-{1\over4a^2}D_{n-2}</script><p>那么可以发现$D_n$应当是可以展开为关于$(1-\lambda)$的表达式。诶，这句话怎么似曾相识？没错，这就是切比雪夫多项式啊！！！我在GCN的必备知识中有提到过，详情见<a href="http://tsotfsk.top/2019/12/17/GCN要用到的数学知识系列(四">切比雪夫多项式</a>/)。如果你能想到这里，那我觉得你已经在这个问题上前进了一大步~，那我们现在知道这个和切比雪夫多项式有一样的结构了，那接下来呢？接下来我该如何去求解$\lambda$的值呢？</p>
+<script type="math/tex; mode=display">
+T_n(x)=2xT_{n-1}(t)-T_{n-2}(x)</script><p>那么显然这里可以让$2x=(1-\lambda)$，但是$D_{n-2}$前面的系数不为$1$诶，No Problem！！​注意到矩阵的特征值可以做线性变换，也就是说我们可以取$A’=-2aA$，那么$\lambda’=-2a\lambda$</p>
+<p>那么我们可以求$A’$的特征值，显然可以得到$A’$对应的$D’$，那么就有</p>
+<script type="math/tex; mode=display">
+{ D' _ n = ( - 2 a { - } \lambda' ) D'  _ { n - 1 } - D'  _ { n - 2 } }</script><p>那么我们令$2x = - 2a - \lambda’$，同时有$D’(0)=1,D’(1)=2x$，那么这里就是二型切比雪夫多项式，注意到其通解为</p>
+<script type="math/tex; mode=display">
+D'_n(x) = { sin((n+1) cos^{-1}(x)) \over sin(cos^{ -1 }x)}</script><p>显然可知$D’(x)$对应的$n$个零点分别是</p>
+<script type="math/tex; mode=display">
+x=cos({k \pi \over n+1}) \space \space \space \space \space \space k=1 , 2, \cdots, n</script><p>那么我们所求的$A$的$\lambda$就有</p>
+<script type="math/tex; mode=display">
+\lambda_k=-{1\over2a}(-2a-2cos({k \pi \over n+1}))=1+{1\over a}cos({k \pi \over n+1})</script><p>$a&gt;0$，那么显然</p>
+<script type="math/tex; mode=display">
+min(\lambda_k)=\lambda_n=1+{1\over a}cos({n \pi \over n+1})=1-{1\over a}cos({\pi \over n+1}) \geq 0</script><p>那么可以知道</p>
+<script type="math/tex; mode=display">
+a \leq cos({\pi \over n+1})</script><p>那么$a$的最大值也就是原式的最大值就是$cos({\pi \over n+1})$，证毕，撒花。</p>
+<h2 id="待探索部分"><a href="#待探索部分" class="headerlink" title="待探索部分"></a><strong>待探索部分</strong></h2><p>注意到$(1)$式中出现了许多诸如$\sqrt \lambda$，$\sqrt {1- \lambda}$，$\sqrt \mu$，$\sqrt {1-\mu}$的项，而且注意到$\lambda$，$\mu\in[0,1]$，那么聪明的小伙伴肯定想到了！！！三角换元。如果我们令$\lambda=sin^2 \alpha, \mu=sin^2 \beta $，那么$(1)$式就变成了</p>
+<script type="math/tex; mode=display">
+2sin \alpha = 2cos\alpha sin\beta = 2cos\beta</script><p>这样我们就消掉了根号，可是接下来呢？我们要求的其中任意一项。注意到$sin\alpha=cos\beta$那么就有$cos \alpha = sin \beta$</p>
+<p>也就是$2sin^2 \beta=2cos\beta$，也就是说$1-2sin^2 \beta=1-2cos\beta$，也就是$cos2\beta=1-2cos\beta$</p>
+<p>到这里似乎也没思路呢，那么我们不妨先就此打住，转而去看看看$n=5$的情况，</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+2\sqrt \lambda = 2 \sqrt{(1-\lambda)\mu}=2 \sqrt{(1-\mu)\gamma}=2 \sqrt{1-\gamma} \tag{2}
+\end{align*}</script><p>这个式子可以得到</p>
+<script type="math/tex; mode=display">
+2sin \alpha = 2cos\alpha sin\beta = 2cos\beta sin\nu=2cos\nu \tag{3}</script><p>采用相同的方式去代换，消掉$\alpha$和$\beta$，$\cdots$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E5%A4%9A%E9%A1%B9%E5%BC%8F/" rel="tag"># 切比雪夫多项式</a>
+              <a href="/tags/%E4%BA%8C%E6%AC%A1%E5%9E%8B/" rel="tag"># 二次型</a>
+              <a href="/tags/%E5%8D%8A%E6%AD%A3%E5%AE%9A%E7%9F%A9%E9%98%B5/" rel="tag"># 半正定矩阵</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/24/LSTM%E4%B8%8EGRU%E8%AF%A6%E8%A7%A3/" rel="prev" title="LSTM与GRU详解">
+      <i class="fa fa-chevron-left"></i> LSTM与GRU详解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/16/%E4%B8%80%E9%81%93%E6%9C%89%E8%B6%A3%E7%9A%84%E6%95%B0%E5%AD%A6%E9%A2%98(%E4%B8%89)/" rel="next" title="一道有趣的数学题(三)">
+      一道有趣的数学题(三) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一般解法"><span class="nav-number">1.</span> <span class="nav-text">一般解法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二次型的解法"><span class="nav-number">2.</span> <span class="nav-text">二次型的解法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#待探索部分"><span class="nav-number">3.</span> <span class="nav-text">待探索部分</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">记录科研中遇到的各种问题，也会分享一些有趣的数学知识。</div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tsotfsk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;tsotfsk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/1337990880" title="QQ → 1337990880"><i class="fa fa-fw fa-qq"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/damengji" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;damengji" rel="noopener" target="_blank"><i class="fa fa-fw fa-pencil-square"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.cnblogs.com/tsotfsk/" title="博客园 → https:&#x2F;&#x2F;www.cnblogs.com&#x2F;tsotfsk&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-codiepie"></i>博客园</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">56k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:58</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'zen7sY1TfclXVpV2s6BIlKUX-gzGzoHsz',
+      appKey: '6A9hsTxX5imXx7y4LcN5QLzX',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
