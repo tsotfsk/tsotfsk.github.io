@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/fish.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://tsotfsk.top').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="距离KDD CUP 2020的比赛结束已经有半年了，正巧这学期选了一门复杂网络的课，大作业有一个选题是需要用GNN来做一些事，于是就考虑复盘一下这个比赛过程。由于我之前主要是在队伍中负责图神经网络的部分，当时做的不太理想，所以这次复盘也主要是对之前的工作进行反思以及改进。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDD CUP 2020 Debiasing 赛道总结">
+<meta property="og:url" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="咸鱼">
+<meta property="og:description" content="距离KDD CUP 2020的比赛结束已经有半年了，正巧这学期选了一门复杂网络的课，大作业有一个选题是需要用GNN来做一些事，于是就考虑复盘一下这个比赛过程。由于我之前主要是在队伍中负责图神经网络的部分，当时做的不太理想，所以这次复盘也主要是对之前的工作进行反思以及改进。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111200538815.png">
+<meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184528736.png">
+<meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184553759.png">
+<meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184608944.png">
+<meta property="article:published_time" content="2021-01-11T09:41:53.000Z">
+<meta property="article:modified_time" content="2021-01-11T12:06:41.501Z">
+<meta property="article:tag" content="KDD CUP">
+<meta property="article:tag" content="比赛">
+<meta property="article:tag" content="开源代码">
+<meta property="article:tag" content="感悟">
+<meta property="article:tag" content="总结">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111200538815.png">
+
+<link rel="canonical" href="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>KDD CUP 2020 Debiasing 赛道总结 | 咸鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">咸鱼</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">一个热爱数学的小码农</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">57</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">20</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="记录科研中遇到的各种问题，也会分享一些有趣的数学知识。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="咸鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KDD CUP 2020 Debiasing 赛道总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 17:41:53 / 修改时间：20:06:41" itemprop="dateCreated datePublished" datetime="2021-01-11T17:41:53+08:00">2021-01-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>距离KDD CUP 2020的比赛结束已经有半年了，正巧这学期选了一门复杂网络的课，大作业有一个选题是需要用GNN来做一些事，于是就考虑复盘一下这个比赛过程。由于我之前主要是在队伍中负责图神经网络的部分，当时做的不太理想，所以这次复盘也主要是对之前的工作进行反思以及改进。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1.题目描述"></a>1.题目描述</h2><p>此赛道关注于如何在推荐时平衡热门商品以及冷门商品，以对抗推荐系统中经常遇到的马太效应。</p>
+<p><strong>使用数据</strong></p>
+<p>数据采样自手机淘宝某促销阶段连续两周的点击数据。量级大概是3万用户，11万商品，然后有100万条点击记录。数据文件信息如下</p>
+<p><strong>1)特征文件</strong></p>
+<ul>
+<li>商品信息: <item_id>, <text_embedding>, <image_embedding></image_embedding></text_embedding></item_id></li>
+<li>用户信息: <user_id>, <user_age_level>, <user_gender>, <user_city_level></user_city_level></user_gender></user_age_level></user_id></li>
+</ul>
+<p><strong>2)训练文件</strong></p>
+<ul>
+<li>交互信息: <user_id>, <item_id>, <time></time></item_id></user_id></li>
+</ul>
+<p><strong>3)测试文件</strong></p>
+<ul>
+<li><p>交互信息: <user_id>, <item_id>, <time></time></item_id></user_id></p>
+</li>
+<li><p>预测信息: <user_id>,  <q_time></q_time></user_id></p>
+</li>
+</ul>
+<p><strong>评测方式</strong></p>
+<p>已知用户某$k-1$个时间点的交互数据，预测在第$k$个时间点用户会点击的商品。具体的，对每个用户召回$50$个商品，以最不热门的$50\%$商品的NDCG来衡量我们方法的好坏。</p>
+<h2 id="3-赛题解析"><a href="#3-赛题解析" class="headerlink" title="3. 赛题解析"></a>3. 赛题解析</h2><h3 id="1-任务定义"><a href="#1-任务定义" class="headerlink" title="1) 任务定义"></a>1) 任务定义</h3><p>首先这可以看作是一个序列推荐的任务，因为是给定一个q_time，预测用户会在这个q_time点击什么，但这并不是一个传统意义上的next item的而推荐，因为后续分析数据后发现，q_time对应的商品并不是用户曝光数据中的最后一个商品。同时我们发现用户特征信息缺失严重，所以仅使用了商品的多模态信息，以及用户的交互记录信息。</p>
+<h3 id="2-什么是推荐系统的bias？"><a href="#2-什么是推荐系统的bias？" class="headerlink" title="2) 什么是推荐系统的bias？"></a>2) 什么是推荐系统的bias？</h3><p>题目中所描述的偏差，主要是两类:</p>
+<p><strong>选择性偏差</strong>：如果对用户历史进行建模，那收集的商品仅是所有商品的一个子集，模型之后则总会引导用户去购买出现过的商品。因为未曾被购买过的的商品对模型是未知的。(冷启动问题)</p>
+<p><strong>流行度偏差</strong>：商品的点击呈长尾分布，热门商品在正样本中频繁出现，其也就更容易被推荐，进而加剧马太效应。</p>
+<h3 id="3-如何缓解bias？"><a href="#3-如何缓解bias？" class="headerlink" title="3) 如何缓解bias？"></a>3) 如何缓解bias？</h3><p>1) <strong>充分利用文本和图片特征</strong>。首先注意到题目中给出了商品的文本和图片表达，应当注意到这两个属性理论上是无偏的，即两者均无法显式的反应商品的流行程度。</p>
+<p>2) <strong>对于热门商品使用一定的权重惩罚</strong>。即在推荐时，当按照分数高低排序时，引入一个权重因子来削弱热门商品的分数。</p>
+<h2 id="3-基于图的解决方案"><a href="#3-基于图的解决方案" class="headerlink" title="3. 基于图的解决方案"></a>3. 基于图的解决方案</h2><p>大致流程如下:</p>
+<p><strong>1)</strong> 基于规则与共现得到第一个Item2Item的相似度矩阵。</p>
+<p><strong>2)</strong> 基于text embedding 和image embedding 得到 第二个Item2Item的相似度矩阵。</p>
+<p><strong>3)</strong> 依据两个相似度矩阵构图，取相似度top 50连边。图为有向有权图。</p>
+<p><strong>4)</strong> 在图上采用不同方法进行随机游走得到序列，然后利用Word2Vec得到商品表达。</p>
+<p><strong>5)</strong> 基于商品表达重构相似度矩阵，然后使用规则来为用户推荐商品。</p>
+<p>后续会慢慢解释上述各种做法的原因。</p>
+<h4 id="1-为何构图？"><a href="#1-为何构图？" class="headerlink" title="1) 为何构图？"></a>1) 为何构图？</h4><p>为什么图表示学习的方法可能是有用的呢？这点我们受到了baseline以及赵老师的启发。在比赛初期，赛题讨论区放出了一个ItemCF的方法，我们试验后发现其效果非常的好，然后队友又基于规则进行了改进，这些改进使得我们甚至在比赛初期拿到了rank1的好结果，那ItemCF的方法的思想是什么呢？很简单，其核心就是构造一个商品之间的相似度矩阵。原始的ItemCF是基于共现来计算的这个矩阵，而我们改进后的ItemCF则综合考虑了商品曝光数量，用户点击数量，商品间点击间隔，点击时间先后等多种特征来计算。</p>
+<p><img src="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD CUP 2020 Debiasing 赛道总结\image-20210111200538815.png" alt="image-20210111200538815"></p>
+<p>那么很显然，根据我们的改进过程，可以发现，这个<strong>相似度矩阵的质量，极大的影响了我们的推荐结果</strong>。实际上，我们后续的所有实验几乎都是在<strong>优化这个相似度矩阵</strong>。注意到，相似度矩阵本身是可以转化为图的，其中相似度可以作为边权，商品则作为了节点。那么应用图表示学习的方法来重构这个相似度矩阵的观点便油然而生了。</p>
+<h4 id="2-如何构图？"><a href="#2-如何构图？" class="headerlink" title="2). 如何构图？"></a>2). 如何构图？</h4><ul>
+<li><strong>多模态图(有向有权图)</strong>： 取图片向量0.95+文本向量0.05，取每个商品top50相似的连边。构图后共有108916个节点，5445800条边</li>
+<li><strong>序列图(有向有权图)</strong>：取每个用户序列内商品的全连接子图的方式进行构图，权重来自改进后的ItemCF的物品相似度矩阵，取每个商品的top50相似商品连边。构图后共有117720个节点，5876842条边。</li>
+</ul>
+<p>为什么图片和文本要合在一起，然后取这样的比例？因为实际使用中发现文本向量质量不佳，图片向量的效果远好于文本向量，但稍微的引入一些文本向量，效果会提升那么一丢丢。</p>
+<p>为何取top 50？实际上我们取过top 100 以及 top 500，发现大家的结果都差距不大，但是随着top k的k值的提升，学习代价是急剧增大的。碍于当时的硬件资源以及时间资源，我们最后取了50这个值。</p>
+<p>为何图是有向的？实验中我们发现有向比无向要好，当然也可以用一个简单的例子来解释是：正向的话，买电脑之后更可能买一个鼠标。而逆向的话，买鼠标之后似乎不太可能买一台电脑。那么取Top 50后，鼠标是电脑的邻居，但是电脑可能就不是鼠标的邻居了。</p>
+<h4 id="3-图表示学习方法"><a href="#3-图表示学习方法" class="headerlink" title="3). 图表示学习方法"></a>3). 图表示学习方法</h4><ul>
+<li><strong>M | S</strong>：借鉴Node2Vec的概率转移方法在多模态图或者序列图上上游走生成路径，并学习表达。这是最自然的一种方法</li>
+</ul>
+<p><img src="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD CUP 2020 Debiasing 赛道总结\image-20210111184528736.png" alt="image-20210111184528736"></p>
+<ul>
+<li><strong>M+S</strong>：在M随机游走的路径与S随机游走的路径进行合并之后，再学习表达。之所以不采取图结构的直接合并再随机游走是因为二者相似度权重分布差异较大，无法直接进行概率比较而选择跳转。</li>
+</ul>
+<p><img src="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD CUP 2020 Debiasing 赛道总结\image-20210111184553759.png" alt="image-20210111184553759"></p>
+<ul>
+<li><strong>M&amp;S</strong>：采用在两张图之间来回跳转的方式进行游走，比如S-M-S-M-S-M-S-M，概率转移方法同Node2Vec。注意到，这样就可以缓解权重分布差异大的问题，从而学习到一个S和M的联合分布。同时，由于两张图上的节点并不是子集关系，那么如果游走到某一节点后，没有与之对应的另外一模态的邻边，那么当前序列就会终止。</li>
+</ul>
+<p><img src="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/KDD CUP 2020 Debiasing 赛道总结\image-20210111184608944.png" alt="image-20210111184608944"></p>
+<h2 id="4-实验结果"><a href="#4-实验结果" class="headerlink" title="4. 实验结果"></a>4. 实验结果</h2><p>我们使用RNDCG@50<sup><a href="#myfootnote2">2</a></sup>来衡量我们推荐列表的效果</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Hit@50</th>
+<th>NDCG@50</th>
+<th>RHit@50</th>
+<th>RNDCG@50</th>
+<th>Improve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ItemCF</td>
+<td>0.1333</td>
+<td>0.0538</td>
+<td>0.0988</td>
+<td>0.0391</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ItemCF + M</td>
+<td>0.1085</td>
+<td>0.0397</td>
+<td>0.1141</td>
+<td>0.0419</td>
+<td>7.1%</td>
+</tr>
+<tr>
+<td>ItemCF + S</td>
+<td>0.1696</td>
+<td>0.0684</td>
+<td>0.1346</td>
+<td>0.0535</td>
+<td>36.8%</td>
+</tr>
+<tr>
+<td>ItemCF + M+S</td>
+<td>0.1504</td>
+<td>0.0615</td>
+<td>0.1502</td>
+<td>0.0595</td>
+<td>52.3%</td>
+</tr>
+<tr>
+<td>ItemCF + M&amp;S</td>
+<td>0.1816</td>
+<td>0.0705</td>
+<td>0.1722</td>
+<td>0.0646</td>
+<td>65.2%</td>
+</tr>
+<tr>
+<td>Blend MS results</td>
+<td>0.2172</td>
+<td>0.0903</td>
+<td>0.1908</td>
+<td>0.0773</td>
+<td>97.9%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>NOTE</strong>: Blend MS results指的是融合 M，S与M&amp;S的方法。注意到这这种融合还能有不俗的提升，说明融合的游走方式可以学到一些单纯的M和S学不到的信息。</p>
+<h3 id="5-改进策略"><a href="#5-改进策略" class="headerlink" title="5. 改进策略"></a>5. 改进策略</h3><ul>
+<li><p>ItemCF主要有两个流程。一是构造相似度矩阵，二是利用相似度矩阵来进行推荐。而我们只改进了第一个阶段，实际上我们可以利用深度学习的方法，比如YotubeDNN来将图方法得到的商品表达用于召回。</p>
+</li>
+<li><p>多路召回。实际上，我们提到的算法大都是在ItemCF的框架下进行的，应当尝试一些不同的比如UserCF，Swing，甚至最基础的基于embedding的召回方式。这种多路一方面可以体现在相似度矩阵的构造上，一方面也可以直接作用在最后的召回分数上。</p>
+</li>
+<li>划分粗排和精排两个阶段。实际上，简单的规则往往用于粗排，我们可以选择一个适当的召回集大小，然后再构造一些特征，利用一些深度学习的方法或者树方法进行精排。</li>
+<li>优化元路径种类。S-M-S-M可能并不是最优的组合方式。</li>
+</ul>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h3><p>由于学期时间比较紧张，所以复盘中的各个结果，都是一套参数跑下来的，并没有进行过多的调参工作，那么实际的最优结果，肯定是都是要高于上表的。</p>
+<p>1) <strong>切勿迷信论文</strong>。犹记得最初参加比赛时，自己还是一个懵懂的小白，那时候的自己迷信论文，总认为论文中的方法肯定是好的，不然怎么会发出来，然后就在github一顿搜索，然后代入数据取跑，发现结果都很一般。事实上，论文中的结果往往是在作者构造了一个精致的数据集的前提下产生的，他们可能本身就带有严重的bias，甚至在冷启动下根本无法运行！而且一种算法往往也很难fit到所有的数据集上，我在实验中甚至有的算法甚至几乎不推荐冷门商品！所以尽信书不如无书呀！实验是检验道理的唯一标准！</p>
+<p>2)<strong>知其然还要知其所以然</strong>。有时候结果提升了，也还需要问自己一下为什么？这个在实验中多次被赵老师和王老师问到，但我一直没去思考，只是觉得”结果提升了，我哪知道为什么，这难道不是试着来的吗”。其实，很多时候，正是忽略了为什么，才导致下一步的提升很艰难。这里面自己走过了许多的弯路，比如LastItem的问题，每一阶段候选集的问题等等。有时候想破脑袋也没新的提升办法的时候，不如回过头来思考一下，前面的那么多的改进方案为什么work或者为什么不work，往往会柳暗花明又一村。</p>
+<p>3) <strong>天涯何处无芳草，何必单恋一枝花</strong>。有时候一种方法不起作用，没必要死死纠缠，即使是自己代码写错了。我在当时的比赛中一直沉迷于PinSage以及GraphSage。但怎么测试都没能取到可行的结果，甚至结果非常的糟糕，一度怀疑人生，觉得自己菜的不行，耽误了很多时间。而且当时自己也一直相信GraphSage一定会比Node2Vec好。实际不然，现在回过头来思考Node2Vec以及GraphSage的原理，似乎在LinkPrediction这个问题上，真的难分伯仲。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] <a href="https://tianchi.aliyun.com/competition/entrance/231785/information" target="_blank" rel="noopener">KDD Cup 2020 Challenges for Modern E-Commerce Platform: Debiasing</a></p>
+<p>[2] Aditya Grover and Jure Leskovec.node2vec: Scalable Feature Learning for Networks.</p>
+<p>[3] <a href="https://tech.meituan.com/2020/08/20/kdd-cup-debiasing-practice.html" target="_blank" rel="noopener">KDD Cup 2020 Debiasing比赛冠军技术方案及在美团的实践</a></p>
+<p>[4] <a href="https://tianchi.aliyun.com/forum/postDetail?spm=5176.12586969.1002.15.6c3f1f0bypIv8x&amp;postId=103530" target="_blank" rel="noopener">A simple itemCF Baseline, score:0.1169(phase0-2)</a></p>
+<p><a name="myfootnote2">1</a>: RNDCG@50 只计算测试集中曝光量最少的那一半商品的的NDCG</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/KDD-CUP/" rel="tag"># KDD CUP</a>
+              <a href="/tags/%E6%AF%94%E8%B5%9B/" rel="tag"># 比赛</a>
+              <a href="/tags/%E5%BC%80%E6%BA%90%E4%BB%A3%E7%A0%81/" rel="tag"># 开源代码</a>
+              <a href="/tags/%E6%84%9F%E6%82%9F/" rel="tag"># 感悟</a>
+              <a href="/tags/%E6%80%BB%E7%BB%93/" rel="tag"># 总结</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/04/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E8%BF%87%E7%A8%8B/" rel="prev" title="强化学习01——马尔可夫过程">
+      <i class="fa fa-chevron-left"></i> 强化学习01——马尔可夫过程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-题目描述"><span class="nav-number">1.</span> <span class="nav-text">1.题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-赛题解析"><span class="nav-number">2.</span> <span class="nav-text">3. 赛题解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-任务定义"><span class="nav-number">2.1.</span> <span class="nav-text">1) 任务定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-什么是推荐系统的bias？"><span class="nav-number">2.2.</span> <span class="nav-text">2) 什么是推荐系统的bias？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-如何缓解bias？"><span class="nav-number">2.3.</span> <span class="nav-text">3) 如何缓解bias？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-基于图的解决方案"><span class="nav-number">3.</span> <span class="nav-text">3. 基于图的解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-为何构图？"><span class="nav-number">3.0.1.</span> <span class="nav-text">1) 为何构图？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-如何构图？"><span class="nav-number">3.0.2.</span> <span class="nav-text">2). 如何构图？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-图表示学习方法"><span class="nav-number">3.0.3.</span> <span class="nav-text">3). 图表示学习方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-实验结果"><span class="nav-number">4.</span> <span class="nav-text">4. 实验结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-改进策略"><span class="nav-number">4.1.</span> <span class="nav-text">5. 改进策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-总结"><span class="nav-number">4.2.</span> <span class="nav-text">6. 总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">4.3.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name"></p>
+  <div class="site-description" itemprop="description">记录科研中遇到的各种问题，也会分享一些有趣的数学知识。</div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/tsotfsk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;tsotfsk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/1337990880" title="QQ → 1337990880"><i class="fa fa-fw fa-qq"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.zhihu.com/people/damengji" title="知乎 → https:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;damengji" rel="noopener" target="_blank"><i class="fa fa-fw fa-pencil-square"></i>知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.cnblogs.com/tsotfsk/" title="博客园 → https:&#x2F;&#x2F;www.cnblogs.com&#x2F;tsotfsk&#x2F;" rel="noopener" target="_blank"><i class="fa fa-fw fa-codiepie"></i>博客园</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">60k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:06</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'zen7sY1TfclXVpV2s6BIlKUX-gzGzoHsz',
+      appKey: '6A9hsTxX5imXx7y4LcN5QLzX',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
