@@ -58,7 +58,7 @@
 <meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184553759.png">
 <meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184608944.png">
 <meta property="article:published_time" content="2021-01-11T09:41:53.000Z">
-<meta property="article:modified_time" content="2021-01-11T12:18:08.253Z">
+<meta property="article:modified_time" content="2021-01-11T12:22:38.900Z">
 <meta property="article:tag" content="KDD CUP">
 <meta property="article:tag" content="比赛">
 <meta property="article:tag" content="开源代码">
@@ -238,7 +238,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-11 17:41:53 / 修改时间：20:18:08" itemprop="dateCreated datePublished" datetime="2021-01-11T17:41:53+08:00">2021-01-11</time>
+              <time title="创建时间：2021-01-11 17:41:53 / 修改时间：20:22:38" itemprop="dateCreated datePublished" datetime="2021-01-11T17:41:53+08:00">2021-01-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,7 +279,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
+              <span>4.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -307,8 +307,8 @@
 <p>数据采样自手机淘宝某促销阶段连续两周的点击数据。量级大概是3万用户，11万商品，然后有100万条点击记录。数据文件信息如下</p>
 <p><strong>1)特征文件</strong></p>
 <ul>
-<li>商品信息: <item_id>, <text_embedding>, <image_embedding></image_embedding></text_embedding></item_id></li>
-<li>用户信息: <user_id>, <user_age_level>, <user_gender>, <user_city_level></user_city_level></user_gender></user_age_level></user_id></li>
+<li>商品信息: <code>&lt;item_id&gt;, &lt;text_embedding&gt;, &lt;image_embedding&gt;</code></li>
+<li>用户信息: <code>&lt;user_id&gt;, &lt;user_age_level&gt;, &lt;user_gender&gt;, &lt;user_city_level&gt;</code></li>
 </ul>
 <p><strong>2)训练文件</strong></p>
 <ul>
@@ -322,7 +322,7 @@
 </li>
 </ul>
 <p><strong>评测方式</strong></p>
-<p>已知用户某$k-1$个时间点的交互数据，预测在第$k$个时间点用户会点击的商品。具体的，对每个用户召回$50$个商品，以最不热门的$50\%$商品的NDCG来衡量我们方法的好坏。</p>
+<p>已知用户某$k-1$个时间点的交互数据，预测在第$k$个时间点用户会点击的商品。具体的，对每个用户召回$50$个商品，以最不热门的$50\%$商品的$NDCG$来衡量我们方法的好坏。</p>
 <h2 id="赛题解析"><a href="#赛题解析" class="headerlink" title="赛题解析"></a>赛题解析</h2><h3 id="任务定义"><a href="#任务定义" class="headerlink" title="任务定义"></a>任务定义</h3><p>首先这可以看作是一个序列推荐的任务，因为是给定一个q_time，预测用户会在这个q_time点击什么，但这并不是一个传统意义上的next item的而推荐，因为后续分析数据后发现，q_time对应的商品并不是用户曝光数据中的最后一个商品。同时我们发现用户特征信息缺失严重，所以仅使用了商品的多模态信息，以及用户的交互记录信息。</p>
 <h3 id="什么是推荐系统的bias？"><a href="#什么是推荐系统的bias？" class="headerlink" title="什么是推荐系统的bias？"></a>什么是推荐系统的bias？</h3><p>题目中所描述的偏差，主要是两类:</p>
 <p><strong>选择性偏差</strong>：如果对用户历史进行建模，那收集的商品仅是所有商品的一个子集，模型之后则总会引导用户去购买出现过的商品。因为未曾被购买过的的商品对模型是未知的。(冷启动问题)</p>
