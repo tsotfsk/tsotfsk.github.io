@@ -58,7 +58,7 @@
 <meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184553759.png">
 <meta property="og:image" content="http://tsotfsk.top/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184608944.png">
 <meta property="article:published_time" content="2021-01-11T09:41:53.000Z">
-<meta property="article:modified_time" content="2021-01-11T12:22:38.900Z">
+<meta property="article:modified_time" content="2021-01-11T12:34:04.164Z">
 <meta property="article:tag" content="KDD CUP">
 <meta property="article:tag" content="比赛">
 <meta property="article:tag" content="开源代码">
@@ -238,7 +238,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-11 17:41:53 / 修改时间：20:22:38" itemprop="dateCreated datePublished" datetime="2021-01-11T17:41:53+08:00">2021-01-11</time>
+              <time title="创建时间：2021-01-11 17:41:53 / 修改时间：20:34:04" itemprop="dateCreated datePublished" datetime="2021-01-11T17:41:53+08:00">2021-01-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -358,7 +358,7 @@
 <li><strong>M&amp;S</strong>：采用在两张图之间来回跳转的方式进行游走，比如S-M-S-M-S-M-S-M，概率转移方法同Node2Vec。注意到，这样就可以缓解权重分布差异大的问题，从而学习到一个S和M的联合分布。同时，由于两张图上的节点并不是子集关系，那么如果游走到某一节点后，没有与之对应的另外一模态的邻边，那么当前序列就会终止。</li>
 </ul>
 <p><img src="/2021/01/11/KDD%20CUP%202020%20Debiasing%20%E8%B5%9B%E9%81%93%E6%80%BB%E7%BB%93/image-20210111184608944.png" alt="image-20210111184608944"></p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>我们使用RNDCG@50<sup><a href="#myfootnote2">2</a></sup>来衡量我们推荐列表的效果</p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>我们使用RNDCG@50<sup><a href="#myfootnote1">1</a></sup>来衡量我们推荐列表的效果</p>
 <div class="table-container">
 <table>
 <thead>
@@ -440,7 +440,7 @@
 <p>[2] Aditya Grover and Jure Leskovec.node2vec: Scalable Feature Learning for Networks.</p>
 <p>[3] <a href="https://tech.meituan.com/2020/08/20/kdd-cup-debiasing-practice.html" target="_blank" rel="noopener">KDD Cup 2020 Debiasing比赛冠军技术方案及在美团的实践</a></p>
 <p>[4] <a href="https://tianchi.aliyun.com/forum/postDetail?spm=5176.12586969.1002.15.6c3f1f0bypIv8x&amp;postId=103530" target="_blank" rel="noopener">A simple itemCF Baseline, score:0.1169(phase0-2)</a></p>
-<p><a name="myfootnote2">1</a>: RNDCG@50 只计算测试集中曝光量最少的那一半商品的的NDCG</p>
+<p><a name="myfootnote1">1</a>: RNDCG@50 只计算测试集中曝光量最少的那一半商品的的NDCG</p>
 
     </div>
 
