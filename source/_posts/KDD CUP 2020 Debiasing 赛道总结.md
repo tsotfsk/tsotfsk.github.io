@@ -25,8 +25,8 @@ tags:
 
 **1)特征文件**
 
-- 商品信息: <item_id>, <text_embedding>, <image_embedding>
-- 用户信息: <user_id>, <user_age_level>, <user_gender>, <user_city_level>
+- 商品信息: `<item_id>, <text_embedding>, <image_embedding>`
+- 用户信息: `<user_id>, <user_age_level>, <user_gender>, <user_city_level>`
 
 **2)训练文件**
 
@@ -40,7 +40,7 @@ tags:
 
 **评测方式**
 
-已知用户某$k-1$个时间点的交互数据，预测在第$k$个时间点用户会点击的商品。具体的，对每个用户召回$50$个商品，以最不热门的$50\%$商品的NDCG来衡量我们方法的好坏。
+已知用户某$k-1$个时间点的交互数据，预测在第$k$个时间点用户会点击的商品。具体的，对每个用户召回$50$个商品，以最不热门的$50\%$商品的$NDCG$来衡量我们方法的好坏。
 
 ## 赛题解析
 
