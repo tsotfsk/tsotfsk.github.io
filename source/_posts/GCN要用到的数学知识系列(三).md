@@ -4,7 +4,6 @@ date: 2019-12-15 17:45:32
 mathjax: true
 categories:
 - GCN要用到的数学知识
-- 拉普拉斯矩阵
 tags:
 - 拉普拉斯算子
 - 拉普拉斯矩阵

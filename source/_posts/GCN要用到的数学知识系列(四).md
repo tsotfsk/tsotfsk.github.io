@@ -4,7 +4,6 @@ date: 2019-12-17 18:55:55
 mathjax: true
 categories:
 - GCN要用到的数学知识
-- 切比雪夫多项式
 tags:
 - 切比雪夫微分方程
 - 切比雪夫多项式

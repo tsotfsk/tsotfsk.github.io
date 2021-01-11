@@ -4,7 +4,6 @@ date: 2019-12-15 09:59:49
 mathjax: true
 categories:
 - GCN要用到的数学知识
-- 卷积的定义和性质
 tags: 
 - 离散卷积
 - 图形处理中的卷积

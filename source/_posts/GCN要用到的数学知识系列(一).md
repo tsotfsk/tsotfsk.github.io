@@ -4,7 +4,6 @@ date: 2019-12-14 20:47:00
 mathjax: true
 categories:
 - GCN要用到的数学知识
-- 傅里叶变换
 tags: 
 - 线性空间
 - 连续型傅里叶变换
