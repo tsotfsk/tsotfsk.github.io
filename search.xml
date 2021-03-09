@@ -6,6 +6,7 @@
     <content><![CDATA[<blockquote>
 <p>FM(Factorization Machine)类的模型貌似是一大类吧，这里就稍微总结下，之前一直对这类模型不太了解，也算是借此机会学习一下。</p>
 </blockquote>
+<a id="more"></a>
 <h2 id="1-最基础的FM"><a href="#1-最基础的FM" class="headerlink" title="1.最基础的FM"></a>1.最基础的FM</h2><p>FM要解决的就是特征交叉的问题，推荐系统的特征往往可以分为三类</p>
 <ul>
 <li>User特征: user_id, 年龄，性别等</li>
