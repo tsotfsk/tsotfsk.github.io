@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>GAN的解读</title>
+    <url>/2021/06/30/GAN%E7%9A%84%E8%A7%A3%E8%AF%BB/</url>
+    <content><![CDATA[<blockquote>
+<p>复习GAN</p>
+</blockquote>
+<h2 id="GAN的基本结构"><a href="#GAN的基本结构" class="headerlink" title="GAN的基本结构"></a>GAN的基本结构</h2><p>一个Generator希望骗过Descriminator</p>
+<ol>
+<li>为什么Generator不自己做呢？</li>
+</ol>
+<p>AutoEncoder也可以生成类似的效果，Encoder得到的作为feature，那么基于这个sample就可以得到不错的图像。但是由于NN是非线性的。所以feature的线性组合不一定能得到理想中的图像，比如”左”作为feature，和”右”作为feture, 其相加不一定得到”中”。而且其loss基于像素差距，这显然不是描述两张图像相似的好方法，因为相邻像素之间是不会互相感知的，加深NN可以缓解这一问题。</p>
+<ol>
+<li>为什么Descriminator不自己做呢？</li>
+</ol>
+<p>Descriminator的问题在于，其只有正样本，没有负样本。所以负样本需要依靠Descriminator生成，其首先肯定是随机生成的，之后采取比较暴力的方法解Descriminator，将输出值大的作为负样本输入</p>
+<script type="math/tex; mode=display">
+\tilde{x} = \arg \max_{x\in X}{D(x)}</script><p>这样Descrminator就可以做的比较好。所以问题就是负样本难以生成。</p>
+<h2 id="为什么要使用GAN呢？"><a href="#为什么要使用GAN呢？" class="headerlink" title="为什么要使用GAN呢？"></a>为什么要使用GAN呢？</h2><p>GAN相当于使用Generator来解决Descriminator难以寻找负样本的问题，同时其摈弃了像素级的相似度，而用一种更高级的全局相似度(高阶特征分布)判别图像。</p>
+<p>GAN的对抗</p>
+<p>Generator 和 Descriminator </p>
+]]></content>
+  </entry>
+  <entry>
+    <title>pytorch使用C++拓展</title>
+    <url>/2021/05/04/pytorch%E4%BD%BF%E7%94%A8C-%E6%8B%93%E5%B1%95/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>pyg学习</title>
+    <url>/2021/05/04/pyg%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>分布式机器学习</title>
+    <url>/2021/05/04/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[]]></content>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>分布式</tag>
+        <tag>tensorflow</tag>
+        <tag>pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>利用强化学习去玩合成大西瓜</title>
     <url>/2021/03/18/%E5%88%A9%E7%94%A8%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%8E%BB%E7%8E%A9%E5%90%88%E6%88%90%E5%A4%A7%E8%A5%BF%E7%93%9C/</url>
     <content><![CDATA[<blockquote>
@@ -153,7 +196,7 @@ y_{f w f m}=w_{0}+\sum_{i=1}^{n} w_{i} x_{i}+\sum_{i=1}^{n} \sum_{j=i+1}^{n}<\ma
 <h3 id="5-如何创建账号以及分配权限"><a href="#5-如何创建账号以及分配权限" class="headerlink" title="5.如何创建账号以及分配权限"></a>5.如何创建账号以及分配权限</h3><p><strong>现象描述:</strong> 作为一个服务器管理员，那么分配账号自然是家常便饭了。PS：脑壳疼，一台服务器10个人用，真是资源匮乏啊。</p>
 <p><strong>解决方案:</strong></p>
 <p><strong>1) 添加账号的三板斧</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 添加用户</span></span><br><span class="line">useradd -d /home/&lt;username&gt; &lt;username&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 更改用户使用的shell类型</span></span><br><span class="line">usermod -s /bin/bash &lt;username&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置密码</span></span><br><span class="line">pwd &lt;username&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 添加用户</span></span><br><span class="line">useradd -d /home/&lt;username&gt; -m &lt;username&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 更改用户使用的shell类型</span></span><br><span class="line">usermod -s /bin/bash &lt;username&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置密码</span></span><br><span class="line">passwd &lt;username&gt;</span><br></pre></td></tr></table></figure>
 <p><strong>2) 分配权限</strong></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> sudo权限</span></span><br><span class="line">usermod -a -G sudo &lt;username&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> docker</span></span><br><span class="line">usermod -a -G docker &lt;username&gt;</span><br></pre></td></tr></table></figure>
 <p><strong>3) 删除用户</strong></p>
