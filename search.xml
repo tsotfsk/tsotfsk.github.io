@@ -1,82 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>GAN的解读</title>
-    <url>/2021/06/30/GAN%E7%9A%84%E8%A7%A3%E8%AF%BB/</url>
-    <content><![CDATA[<blockquote>
-<p>复习GAN</p>
-</blockquote>
-<h2 id="GAN的基本结构"><a href="#GAN的基本结构" class="headerlink" title="GAN的基本结构"></a>GAN的基本结构</h2><p>一个Generator希望骗过Descriminator</p>
-<ol>
-<li>为什么Generator不自己做呢？</li>
-</ol>
-<p>AutoEncoder也可以生成类似的效果，Encoder得到的作为feature，那么基于这个sample就可以得到不错的图像。但是由于NN是非线性的。所以feature的线性组合不一定能得到理想中的图像，比如”左”作为feature，和”右”作为feture, 其相加不一定得到”中”。而且其loss基于像素差距，这显然不是描述两张图像相似的好方法，因为相邻像素之间是不会互相感知的，加深NN可以缓解这一问题。</p>
-<ol>
-<li>为什么Descriminator不自己做呢？</li>
-</ol>
-<p>Descriminator的问题在于，其只有正样本，没有负样本。所以负样本需要依靠Descriminator生成，其首先肯定是随机生成的，之后采取比较暴力的方法解Descriminator，将输出值大的作为负样本输入</p>
-<script type="math/tex; mode=display">
-\tilde{x} = \arg \max_{x\in X}{D(x)}</script><p>这样Descrminator就可以做的比较好。所以问题就是负样本难以生成。</p>
-<h2 id="为什么要使用GAN呢？"><a href="#为什么要使用GAN呢？" class="headerlink" title="为什么要使用GAN呢？"></a>为什么要使用GAN呢？</h2><p>GAN相当于使用Generator来解决Descriminator难以寻找负样本的问题，同时其摈弃了像素级的相似度，而用一种更高级的全局相似度(高阶特征分布)判别图像。</p>
-<p>GAN的对抗</p>
-<p>Generator 和 Descriminator </p>
-]]></content>
-  </entry>
-  <entry>
     <title>pytorch使用C++拓展</title>
     <url>/2021/05/04/pytorch%E4%BD%BF%E7%94%A8C-%E6%8B%93%E5%B1%95/</url>
     <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>pyg学习</title>
-    <url>/2021/05/04/pyg%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>分布式机器学习</title>
-    <url>/2021/05/04/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[]]></content>
-      <tags>
-        <tag>机器学习</tag>
-        <tag>分布式</tag>
-        <tag>tensorflow</tag>
-        <tag>pytorch</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>利用强化学习去玩合成大西瓜</title>
-    <url>/2021/03/18/%E5%88%A9%E7%94%A8%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%8E%BB%E7%8E%A9%E5%90%88%E6%88%90%E5%A4%A7%E8%A5%BF%E7%93%9C/</url>
-    <content><![CDATA[<blockquote>
-<p>年初花了点时间写了一个dqn玩合成大西瓜，但是效果还不太理想，感觉特征工程做的还是不太够。所以这里提出一些暂时的解决方案，还有待完善</p>
-</blockquote>
-<a id="more"></a>
-<h2 id="利用DQN去玩合成大西瓜"><a href="#利用DQN去玩合成大西瓜" class="headerlink" title="利用DQN去玩合成大西瓜"></a>利用DQN去玩合成大西瓜</h2><p>强化学习五要素<strong>Environment, Agent, State, Action，Reward</strong></p>
-<h3 id="1-如何定义state"><a href="#1-如何定义state" class="headerlink" title="1.如何定义state"></a>1.如何定义state</h3><script type="math/tex; mode=display">
-s_t = (o_t,b_t)</script><p>其中$o_t$是当前的局势，即画面中呈现的内容。$b_t$是当前待发射的水果。起初使用的是让整个游戏画面作为一个State，但是发现这种情况不是很好训练，于是转而做一些特征工程。</p>
-<p><strong>使用的特征</strong>：</p>
-<ul>
-<li>各个水果的坐标</li>
-<li>待发射水果与场景中水果之间的距离</li>
-</ul>
-<h3 id="2-如何用embedding表征一个state？"><a href="#2-如何用embedding表征一个state？" class="headerlink" title="2.如何用embedding表征一个state？"></a>2.如何用embedding表征一个state？</h3><ul>
-<li><strong>屏幕中出现的球的数量是变长的，这意味着o是变长的。</strong>这不同于直接将画面的RGB属性作为$o_t$。所以要考虑如何将变长的球序列转化为等长的张量。</li>
-<li><strong>如何获取最上层的水果信息。</strong>待发射的球的落点肯定在最上面的一层水果，所以要记录的距离应当主要与最上层水果有关。比如，待发射水果如果与最上层相同水果的水平距离越短，那么就容易触发水果的合并。理论上来说，总以这种贪心算法应该也能获得不错的结果。</li>
-<li><strong>如何有效的利用球触点之间的图结构信息。</strong>实际上，各个球之间紧密连接，这是一个异质图，有接触点的两个水果之间存在一条连边。所以state中的$o_t$也可以看作是一个异质图。感觉这个信息会非常的有用</li>
-<li><strong>采用alpha go中的MCTS是否会是一个合适的选择？</strong> 注意到，早期的合成大西瓜，每一局里水果的掉落顺序是相同的，那么这种情况就比较符合MCTS的想法，可以让结果更快的收敛。</li>
-</ul>
-<h3 id="3-一个初步的想法"><a href="#3-一个初步的想法" class="headerlink" title="3. 一个初步的想法"></a>3. 一个初步的想法</h3><p>利用图神经网络来压缩当前的局面。注意到这是一个异质图，水果的类型一共有11种，那么我们会有一个基础的水果embedding，记为$F$。同时我们会维护一个水果的位置embedding，记为$P_v,P_h$，分别对应竖直和水平位置。因为同样是一个水果，不同的位置也会影响决策。边的权重这里可以暂时不考虑。</p>
-<p>所以最终的话，对于一个State，我们就可以</p>
-<h3 id="4-折扣因子的选择"><a href="#4-折扣因子的选择" class="headerlink" title="4.折扣因子的选择"></a>4.折扣因子的选择</h3><p>贝尔曼方程中的折扣因子在这种情况下首先是很小的。因为合成大西瓜中某一步的操作对未来的收益无法准确衡量，这不同于Flappy Bird。</p>
-]]></content>
-      <categories>
-        <category>强化学习</category>
-      </categories>
-      <tags>
-        <tag>交叉熵</tag>
-        <tag>最大似然</tag>
-        <tag>KL散度</tag>
-        <tag>相对熵</tag>
-      </tags>
   </entry>
   <entry>
     <title>FM大家族</title>
