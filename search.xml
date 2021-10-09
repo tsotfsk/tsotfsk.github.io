@@ -16,6 +16,7 @@
 <li>支持一些快捷键。自带history文件，可以<code>Ctrl+r</code>进行历史命令搜索，还有一些<code>Ctrl+e</code>, <code>Ctrl+b</code>，<code>Ctrl+w</code>等，方便了命令的输入和修改。</li>
 <li>比较美观，具备一定的可定制性。比系统自带的powershell和cmd不知道高到哪里去了，而且还支持非常多的设置，比如支持设置启动脚本，我想启动cmder的时候直接连接实验室的服务器。只需要在启动脚本里加上<code>ssh xxxxxxxx</code>就行了。</li>
 <li>支持右键菜单栏。这个可能每个终端都支持，但是cmder只需要一条命令就完成，省去了写ps脚本的过程。配置完成之后，我开终端就可以通过文件浏览器去定位到文件，然后鼠标右键，直接选择<code>通过cmder打开</code>就可以啦~</li>
+<li>可以作为VS Code的默认终端！你的所有美化都将被继承！如果你正在使用VS Code，那这绝对是一款神器！</li>
 </ul>
 <p>当然，cmder虽然这么好，但是它的缺点是什么呢？</p>
 <p>一个字 <strong>丑</strong>！</p>
